@@ -1,4 +1,4 @@
-# promote_vercel.ps1 - Alias the latest deployment to production URL
+# promote_vercel.ps1 - Alias the latest deployment to ResolvAI production URL
 $envFile = "C:\Users\HP\.env"
 if (Test-Path $envFile) {
     Get-Content $envFile | ForEach-Object {
@@ -25,18 +25,16 @@ if (-not $readyDeploy) {
     exit 1
 }
 
-Write-Host ("Assigning production domain to latest deployment ID: " + $readyDeploy.uid) -ForegroundColor Cyan
+Write-Host ("Assigning ResolvAI domain to latest deployment ID: " + $readyDeploy.uid) -ForegroundColor Cyan
 
-$aliasBody = @{
-    alias = "ai-customer-support-ticketing.vercel.app"
-} | ConvertTo-Json
+$aliasesToAssign = @("resolvai-platform.vercel.app", "ai-customer-support-ticketing.vercel.app")
 
-try {
-    $aliasRes = Invoke-RestMethod -Uri ("https://api.vercel.com/v2/deployments/" + $readyDeploy.uid + "/aliases") -Method Post -Headers $headers -Body $aliasBody
-    Write-Host "==========================================" -ForegroundColor Green
-    Write-Host "🎉 PRODUCTION DOMAIN UPDATED SUCCESSFULLY!" -ForegroundColor Green
-    Write-Host "Live App: https://ai-customer-support-ticketing.vercel.app" -ForegroundColor Cyan
-    Write-Host "==========================================" -ForegroundColor Green
-} catch {
-    Write-Warning ("Alias response: " + $_)
+foreach ($aliasDomain in $aliasesToAssign) {
+    $aliasBody = @{ alias = $aliasDomain } | ConvertTo-Json
+    try {
+        $aliasRes = Invoke-RestMethod -Uri ("https://api.vercel.com/v2/deployments/" + $readyDeploy.uid + "/aliases") -Method Post -Headers $headers -Body $aliasBody
+        Write-Host ("🎉 Domain alias updated: https://" + $aliasDomain) -ForegroundColor Green
+    } catch {
+        Write-Warning ("Alias response for " + $aliasDomain + ": " + $_)
+    }
 }

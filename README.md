@@ -1,6 +1,6 @@
 # 🚀 ResolvAI: Enterprise AI Customer Support & SLA Platform
 
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-customer-support-ticketing.vercel.app)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://resolvai-platform.vercel.app)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14.2-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Python ML](https://img.shields.io/badge/Python-3.11_ML-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
@@ -10,7 +10,7 @@
 ---
 
 ## 🌐 Live Production Demo
-* **Live Web App**: [https://ai-customer-support-ticketing.vercel.app](https://ai-customer-support-ticketing.vercel.app)
+* **Live Web App**: [https://resolvai-platform.vercel.app](https://resolvai-platform.vercel.app)
 * **GitHub Repository**: [https://github.com/ByteBySway/ai-customer-support-ticketing](https://github.com/ByteBySway/ai-customer-support-ticketing)
 
 ---
