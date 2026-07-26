@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 
-const API_BASE = 'http://localhost:5000/api';
+// Unified API base URL (relative for Vercel & local serverless compatibility)
+const API_BASE = '/api';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('tickets');
@@ -26,7 +27,19 @@ export default function Home() {
   const [aiPreview, setAiPreview] = useState(null);
   const [isClassifying, setIsClassifying] = useState(false);
 
-  // Fetch Data from Backend
+  // Ticket Detail & Comments Drawer State
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newCommentText, setNewCommentText] = useState('');
+  const [aiDraftReply, setAiDraftReply] = useState('');
+  const [isGeneratingReply, setIsGeneratingReply] = useState(false);
+
+  // CSAT Rating Modal State
+  const [csatModalTicket, setCsatModalTicket] = useState(null);
+  const [csatRating, setCsatRating] = useState(5);
+  const [csatFeedbackText, setCsatFeedbackText] = useState('');
+
+  // Fetch Data from Backend API
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -50,7 +63,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Live poll every 10s
+    const interval = setInterval(fetchData, 12000);
     return () => clearInterval(interval);
   }, []);
 
@@ -79,7 +92,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [newSubject, newDesc]);
 
-  // Handle Ticket Submission
+  // Handle Create Ticket
   const handleCreateTicket = async (e) => {
     e.preventDefault();
     if (!newSubject || !newDesc) return;
@@ -110,7 +123,7 @@ export default function Home() {
     }
   };
 
-  // Update Status
+  // Status Change
   const handleStatusChange = async (ticketId, newStatus) => {
     try {
       await fetch(`${API_BASE}/tickets/${ticketId}`, {
@@ -122,6 +135,98 @@ export default function Home() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // Fetch Comments for Selected Ticket
+  const openTicketDetail = async (ticket) => {
+    setSelectedTicket(ticket);
+    setAiDraftReply('');
+    try {
+      const res = await fetch(`${API_BASE}/tickets/${ticket.id}/comments`).then(r => r.json());
+      if (res.success) setComments(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Add Comment
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (!newCommentText || !selectedTicket) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/tickets/${selectedTicket.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: newCommentText, author: "Agent Support", role: "Agent" })
+      }).then(r => r.json());
+
+      if (res.success) {
+        setComments([...comments, res.data]);
+        setNewCommentText('');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // AI Response Suggestion Generator
+  const generateAIReplyDraft = async () => {
+    if (!selectedTicket) return;
+    setIsGeneratingReply(true);
+    try {
+      const res = await fetch(`${API_BASE}/ai/suggest-reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedTicket)
+      }).then(r => r.json());
+
+      if (res.success) {
+        setAiDraftReply(res.data.suggestedReply);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsGeneratingReply(false);
+    }
+  };
+
+  // Submit CSAT Feedback
+  const handleSubmitCsat = async (e) => {
+    e.preventDefault();
+    if (!csatModalTicket) return;
+
+    try {
+      await fetch(`${API_BASE}/tickets/${csatModalTicket.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ csatScore: csatRating, feedback: csatFeedbackText, status: 'Closed' })
+      });
+      setCsatModalTicket(null);
+      setCsatFeedbackText('');
+      fetchData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Export Tickets to CSV
+  const exportToCSV = () => {
+    if (tickets.length === 0) return;
+    const headers = ['ID', 'Customer', 'Email', 'Subject', 'Category', 'Priority', 'Status', 'Assigned Agent', 'Sentiment', 'SLA Deadline'];
+    const rows = tickets.map(t => [
+      t.id, `"${t.customerName}"`, `"${t.customerEmail}"`, `"${t.subject.replace(/"/g, '""')}"`,
+      `"${t.category}"`, t.priority, t.status, `"${t.assignedAgentName}"`, t.sentiment, t.slaDeadline
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `support_tickets_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Filter Tickets
@@ -151,18 +256,23 @@ export default function Home() {
                 SupportPulse AI
               </h1>
               <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
-                <span className="live-dot"></span> AI Active
+                <span className="live-dot"></span> Vercel Live
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
-              Next-Gen Customer Support Ticketing System & Intelligent SLA Engine
+              Smart Customer Support Platform with AI Classification, Routing, SLA & CSAT Engine
             </p>
           </div>
         </div>
 
-        <button onClick={() => setShowCreateModal(true)} className="glow-btn">
-          <span>+ Create AI Ticket</span>
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px 16px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            📥 Export CSV
+          </button>
+          <button onClick={() => setShowCreateModal(true)} className="glow-btn">
+            <span>+ Create AI Ticket</span>
+          </button>
+        </div>
       </header>
 
       {/* Metric Cards Row */}
@@ -275,7 +385,9 @@ export default function Home() {
                         {t.category}
                       </span>
                     </div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F9FAFB' }}>{t.subject}</h3>
+                    <h3 onClick={() => openTicketDetail(t)} style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F9FAFB', cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}>
+                      {t.subject}
+                    </h3>
                   </div>
 
                   {/* SLA Badge */}
@@ -306,14 +418,17 @@ export default function Home() {
 
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {t.status !== 'Resolved' && (
+                    <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                      💬 View Thread & AI Reply
+                    </button>
+                    {t.status !== 'Resolved' && t.status !== 'Closed' && (
                       <button onClick={() => handleStatusChange(t.id, 'Resolved')} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
                         Mark Resolved
                       </button>
                     )}
-                    {t.status === 'Open' && (
-                      <button onClick={() => handleStatusChange(t.id, 'In Progress')} style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
-                        Start Progress
+                    {t.status === 'Resolved' && !t.csatScore && (
+                      <button onClick={() => setCsatModalTicket(t)} style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                        ⭐ Rate CSAT
                       </button>
                     )}
                   </div>
@@ -324,7 +439,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* TAB 2: AI TICKET ROUTING HUB */}
+      {/* TAB 2: AI ROUTING */}
       {activeTab === 'routing' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="glass-panel" style={{ padding: '24px' }}>
@@ -456,6 +571,97 @@ export default function Home() {
                 </div>
               )) || <p style={{ color: 'var(--text-muted)' }}>No feedback entries available yet.</p>}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* TICKET DETAIL & COMMENTS DRAWER MODAL */}
+      {selectedTicket && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '750px', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+              <div>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600 }}>{selectedTicket.id}</span>
+                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF', marginTop: '4px' }}>{selectedTicket.subject}</h2>
+              </div>
+              <button onClick={() => setSelectedTicket(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.4rem', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <p style={{ color: '#D1D5DB', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '20px' }}>{selectedTicket.description}</p>
+
+            {/* AI Suggested Response Section */}
+            <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '16px', borderRadius: '12px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.9rem' }}>🤖 AI Smart Reply Generator</span>
+                <button onClick={generateAIReplyDraft} disabled={isGeneratingReply} style={{ background: 'var(--accent-gradient)', border: 'none', color: '#FFF', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+                  {isGeneratingReply ? 'Generating...' : '✨ Auto-Draft Response'}
+                </button>
+              </div>
+
+              {aiDraftReply ? (
+                <div>
+                  <textarea value={aiDraftReply} onChange={e => setAiDraftReply(e.target.value)} rows={5} style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }} />
+                  <button onClick={() => { setNewCommentText(aiDraftReply); setAiDraftReply(''); }} style={{ marginTop: '8px', background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                    Use Draft in Comment Thread
+                  </button>
+                </div>
+              ) : (
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Click "Auto-Draft Response" to generate an empathetic, context-aware reply using AI.</p>
+              )}
+            </div>
+
+            {/* Comments Thread */}
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF', marginBottom: '12px' }}>💬 Activity Timeline & Notes</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+              {comments.map((c, i) => (
+                <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #818CF8' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                    <span><strong>{c.author}</strong> ({c.role})</span>
+                    <span>{new Date(c.timestamp).toLocaleTimeString()}</span>
+                  </div>
+                  <p style={{ fontSize: '0.85rem', color: '#E5E7EB' }}>{c.text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Add Comment Form */}
+            <form onSubmit={handleAddComment} style={{ display: 'flex', gap: '10px' }}>
+              <input type="text" value={newCommentText} onChange={e => setNewCommentText(e.target.value)} placeholder="Write an internal note or reply to customer..." required style={{ flex: 1, background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
+              <button type="submit" className="glow-btn">Post Note</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CSAT RATING MODAL */}
+      {csatModalTicket && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '450px', padding: '28px' }}>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FBBF24', marginBottom: '8px' }}>Rate Support Experience</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '16px' }}>Ticket: {csatModalTicket.id} - {csatModalTicket.subject}</p>
+
+            <form onSubmit={handleSubmitCsat} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Rating (1 - 5 Stars)</label>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  {[1, 2, 3, 4, 5].map(num => (
+                    <button type="button" key={num} onClick={() => setCsatRating(num)} style={{ background: csatRating >= num ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.05)', color: csatRating >= num ? '#FBBF24' : 'var(--text-muted)', border: '1px solid var(--border-color)', padding: '10px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '1.1rem' }}>
+                      ★ {num}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Customer Feedback</label>
+                <textarea value={csatFeedbackText} onChange={e => setCsatFeedbackText(e.target.value)} rows={3} placeholder="Share your experience..." required style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button type="button" onClick={() => setCsatModalTicket(null)} style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-muted)', padding: '8px 14px', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" className="glow-btn">Submit Rating</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
