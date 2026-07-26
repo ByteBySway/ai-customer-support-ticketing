@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE = '/api';
 
-// Crisp SVG Icon Components
+// Crisp SVG Icons
 const IconZap = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -37,7 +37,7 @@ const IconUsers = () => (
 );
 
 const IconStar = ({ filled = false }) => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? "#FBBF24" : "none"} stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? "#FBBF24" : "none"} stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 );
@@ -74,64 +74,56 @@ const IconBrain = () => (
   </svg>
 );
 
-const IconPieChart = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" />
-  </svg>
-);
-
-const IconAlert = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-    <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-  </svg>
-);
-
 const IconPlus = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
   </svg>
 );
 
-// Stitch-Style Infographic Radial Gauge Component
-const RadialGaugeInfographic = ({ percentage = 96.4, label = "SLA Met Rate" }) => {
-  const radius = 54;
+const IconBell = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+  </svg>
+);
+
+// Stitch Donut SLA Gauge Component
+const StitchSLADonut = ({ percentage = 96.4 }) => {
+  const radius = 50;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-      <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="70" cy="70" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12" />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', margin: '10px 0' }}>
+      <svg width="130" height="130" viewBox="0 0 130 130" style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx="65" cy="65" r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
         <circle
-          cx="70"
-          cy="70"
+          cx="65"
+          cy="65"
           r={radius}
           fill="none"
-          stroke="url(#radialGradient)"
-          strokeWidth="12"
+          stroke="url(#stitchGradient)"
+          strokeWidth="10"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          style={{ transition: 'stroke-dashoffset 1s ease-in-out' }}
         />
         <defs>
-          <linearGradient id="radialGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#10B981" />
-            <stop offset="100%" stopColor="#38BDF8" />
+          <linearGradient id="stitchGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#06B6D4" />
+            <stop offset="100%" stopColor="#10B981" />
           </linearGradient>
         </defs>
       </svg>
       <div style={{ position: 'absolute', textAlign: 'center' }}>
         <span style={{ fontSize: '1.4rem', fontWeight: 800, color: '#FFF' }}>{percentage}%</span>
-        <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</p>
+        <p style={{ fontSize: '0.65rem', color: '#10B981', fontWeight: 600, marginTop: '-2px' }}>Optimal</p>
       </div>
     </div>
   );
 };
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('tickets');
+  const [activeTab, setActiveTab] = useState('Dashboard');
   const [tickets, setTickets] = useState([]);
   const [agents, setAgents] = useState([]);
   const [slaMetrics, setSlaMetrics] = useState(null);
@@ -151,7 +143,7 @@ export default function Home() {
   const [aiPreview, setAiPreview] = useState(null);
   const [isClassifying, setIsClassifying] = useState(false);
 
-  // Ticket Detail & Comments Drawer State
+  // Ticket Detail Drawer State
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [comments, setComments] = useState([]);
   const [newCommentText, setNewCommentText] = useState('');
@@ -163,7 +155,6 @@ export default function Home() {
   const [csatRating, setCsatRating] = useState(5);
   const [csatFeedbackText, setCsatFeedbackText] = useState('');
 
-  // Fetch Data from Backend API
   const fetchData = async () => {
     try {
       const [ticketsRes, agentsRes, slaRes, csatRes] = await Promise.all([
@@ -213,7 +204,6 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [newSubject, newDesc]);
 
-  // Handle Create Ticket
   const handleCreateTicket = async (e) => {
     e.preventDefault();
     if (!newSubject || !newDesc) return;
@@ -244,7 +234,6 @@ export default function Home() {
     }
   };
 
-  // Status Change
   const handleStatusChange = async (ticketId, newStatus) => {
     try {
       await fetch(`${API_BASE}/tickets/${ticketId}`, {
@@ -258,7 +247,6 @@ export default function Home() {
     }
   };
 
-  // Fetch Comments for Selected Ticket
   const openTicketDetail = async (ticket) => {
     setSelectedTicket(ticket);
     setAiDraftReply('');
@@ -270,7 +258,6 @@ export default function Home() {
     }
   };
 
-  // Add Comment
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newCommentText || !selectedTicket) return;
@@ -291,7 +278,6 @@ export default function Home() {
     }
   };
 
-  // AI Response Suggestion Generator
   const generateAIReplyDraft = async () => {
     if (!selectedTicket) return;
     setIsGeneratingReply(true);
@@ -312,7 +298,6 @@ export default function Home() {
     }
   };
 
-  // Submit CSAT Feedback
   const handleSubmitCsat = async (e) => {
     e.preventDefault();
     if (!csatModalTicket) return;
@@ -331,7 +316,6 @@ export default function Home() {
     }
   };
 
-  // Export Tickets to CSV
   const exportToCSV = () => {
     if (tickets.length === 0) return;
     const headers = ['ID', 'Customer', 'Email', 'Subject', 'Category', 'Priority', 'Status', 'Assigned Agent', 'Sentiment', 'SLA Deadline'];
@@ -350,7 +334,6 @@ export default function Home() {
     document.body.removeChild(link);
   };
 
-  // Filter Tickets
   const filteredTickets = tickets.filter(t => {
     if (categoryFilter !== 'All' && t.category !== categoryFilter) return false;
     if (priorityFilter !== 'All' && t.priority !== priorityFilter) return false;
@@ -366,108 +349,209 @@ export default function Home() {
   });
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
-      {/* Header */}
-      <header className="glass-panel" style={{ padding: '20px 28px', marginBottom: '28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ background: 'var(--accent-gradient)', padding: '12px', borderRadius: '12px', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '20px' }}>
+      {/* Stitch Header */}
+      <header className="glass-panel" style={{ padding: '16px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ background: 'var(--accent-gradient)', padding: '10px', borderRadius: '10px', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <IconZap />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <h1 style={{ fontSize: '1.4rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                SupportPulse AI
-              </h1>
-              <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
-                <span className="live-dot"></span> Stitch UI Verified
-              </span>
-            </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
-              Smart Customer Support Platform with AI Classification, Routing, SLA & CSAT Engine
-            </p>
+            <h1 style={{ fontSize: '1.3rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              SupportPulse AI Dashboard
+            </h1>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Automated Ticket Routing, SLA Tracking & Analytics</p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px 16px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <IconDownload /> Export CSV
+        {/* Top Nav Tabs */}
+        <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '10px' }}>
+          {['Dashboard', 'Analytics', 'Team', 'Settings'].map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                background: activeTab === tab ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+                color: activeTab === tab ? '#A5B4FC' : 'var(--text-muted)',
+                border: 'none',
+                padding: '6px 14px',
+                borderRadius: '8px',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                cursor: 'pointer'
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Top Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ color: 'var(--text-muted)', cursor: 'pointer', padding: '8px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)' }}>
+            <IconBell />
+          </div>
+          <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+            <IconDownload /> Export
           </button>
-          <button onClick={() => setShowCreateModal(true)} className="glow-btn">
+          <button onClick={() => setShowCreateModal(true)} className="glow-btn" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
             <IconPlus /> Create AI Ticket
           </button>
         </div>
       </header>
 
-      {/* Metric Cards Row with Stitch Infographic Accent */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '28px' }}>
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>TOTAL TICKETS</p>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#F3F4F6' }}>{tickets.length}</h2>
-          <span style={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 600 }}>+ 12% vs last week</span>
+      {/* KPI Cards Row (Matching Stitch Layout) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div className="glass-panel" style={{ padding: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <span>Total Tickets</span>
+            <IconTicket />
+          </div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#F3F4F6' }}>{tickets.length || 148}</h2>
+          <span style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>+12%</span>
         </div>
 
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>SLA COMPLIANCE</p>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#38BDF8' }}>
+        <div className="glass-panel" style={{ padding: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <span>SLA Compliance</span>
+            <IconClock />
+          </div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#38BDF8' }}>
             {slaMetrics ? `${slaMetrics.complianceRate}%` : '96.4%'}
           </h2>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Target: {slaMetrics?.targetRate || 95}%</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target 95%</span>
         </div>
 
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>AVG CSAT SCORE</p>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#FBBF24', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {csatData ? csatData.averageCsat : 4.85} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>/ 5.0</span>
+        <div className="glass-panel" style={{ padding: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <span>Avg CSAT</span>
+            <IconStar filled />
+          </div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#FBBF24' }}>
+            {csatData ? csatData.averageCsat : 4.85} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>/ 5.0</span>
           </h2>
-          <span style={{ color: '#FBBF24', fontSize: '0.75rem' }}>98% positive reviews</span>
+          <span style={{ color: '#FBBF24', fontSize: '0.7rem' }}>★★★★★</span>
         </div>
 
-        <div className="glass-panel" style={{ padding: '20px' }}>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>AVAILABLE AGENTS</p>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#A7F3D0' }}>
+        <div className="glass-panel" style={{ padding: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+            <span>Available Agents</span>
+            <IconUsers />
+          </div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#A7F3D0' }}>
             {agents.filter(a => a.status === 'Available').length} / {agents.length || 4}
           </h2>
-          <span style={{ color: '#34D399', fontSize: '0.75rem' }}>Optimal workload balanced</span>
+          <span style={{ color: '#34D399', fontSize: '0.7rem' }}>• Online</span>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-        <button className={`tab-btn ${activeTab === 'tickets' ? 'active' : ''}`} onClick={() => setActiveTab('tickets')}>
-          <IconTicket /> Tickets Workspace ({tickets.length})
-        </button>
-        <button className={`tab-btn ${activeTab === 'infographics' ? 'active' : ''}`} onClick={() => setActiveTab('infographics')}>
-          <IconPieChart /> Stitch Infographics & Charts
-        </button>
-        <button className={`tab-btn ${activeTab === 'routing' ? 'active' : ''}`} onClick={() => setActiveTab('routing')}>
-          <IconBot /> AI Ticket Routing
-        </button>
-        <button className={`tab-btn ${activeTab === 'sla' ? 'active' : ''}`} onClick={() => setActiveTab('sla')}>
-          <IconClock /> SLA Tracking
-        </button>
-        <button className={`tab-btn ${activeTab === 'agents' ? 'active' : ''}`} onClick={() => setActiveTab('agents')}>
-          <IconUsers /> Agent Performance
-        </button>
-        <button className={`tab-btn ${activeTab === 'csat' ? 'active' : ''}`} onClick={() => setActiveTab('csat')}>
-          <IconStar filled /> CSAT Analytics
-        </button>
-      </div>
+      {/* Main 2-Column Stitch Dashboard Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 340px) 1fr', gap: '20px' }}>
+        
+        {/* LEFT COLUMN: STITCH INFOGRAPHICS STACK */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          {/* Donut Infographic */}
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <IconClock /> SLA Compliance
+            </h3>
+            <StitchSLADonut percentage={slaMetrics?.complianceRate || 96.4} />
+          </div>
 
-      {/* TAB 1: TICKETS WORKSPACE */}
-      {activeTab === 'tickets' && (
-        <div>
+          {/* Sentiment Distribution Bars */}
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <IconBrain /> Sentiment Distribution
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <span style={{ color: '#10B981', fontWeight: 600 }}>Positive</span>
+                  <span style={{ color: 'var(--text-muted)' }}>60%</span>
+                </div>
+                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ width: '60%', background: '#10B981', height: '100%', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <span style={{ color: '#38BDF8', fontWeight: 600 }}>Neutral</span>
+                  <span style={{ color: 'var(--text-muted)' }}>20%</span>
+                </div>
+                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ width: '20%', background: '#38BDF8', height: '100%', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <span style={{ color: '#F59E0B', fontWeight: 600 }}>Negative</span>
+                  <span style={{ color: 'var(--text-muted)' }}>15%</span>
+                </div>
+                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ width: '15%', background: '#F59E0B', height: '100%', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <span style={{ color: '#F43F5E', fontWeight: 600 }}>Frustrated</span>
+                  <span style={{ color: 'var(--text-muted)' }}>5%</span>
+                </div>
+                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ width: '5%', background: '#F43F5E', height: '100%', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Queue Workload Infographic */}
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <IconUsers /> Queue Workload
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <span>Tier 1 Agents</span>
+                  <span style={{ fontWeight: 600, color: '#EC4899' }}>85%</span>
+                </div>
+                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ width: '85%', background: '#EC4899', height: '100%', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                  <span>Tier 2 Specialists</span>
+                  <span style={{ fontWeight: 600, color: '#8B5CF6' }}>45%</span>
+                </div>
+                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                  <div style={{ width: '45%', background: '#8B5CF6', height: '100%', borderRadius: '4px' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* RIGHT COLUMN: TICKETS WORKSPACE TABLE & CONTROLS */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          
           {/* Controls Bar */}
-          <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '20px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', flex: 1 }}>
-              <div style={{ position: 'relative', width: '300px' }}>
+          <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: 1 }}>
+              <div style={{ position: 'relative', width: '260px' }}>
                 <input
                   type="text"
-                  placeholder="Search tickets by ID, subject..."
+                  placeholder="Search tickets, customers..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 14px 8px 36px', borderRadius: '8px', width: '100%', fontSize: '0.9rem' }}
+                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 12px 6px 32px', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
                 />
-                <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+                <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
                   <IconSearch />
                 </div>
               </div>
@@ -475,7 +559,7 @@ export default function Home() {
               <select
                 value={categoryFilter}
                 onChange={e => setCategoryFilter(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem' }}
+                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '0.8rem' }}
               >
                 <option value="All">All Categories</option>
                 <option value="Technical & Bugs">Technical & Bugs</option>
@@ -487,7 +571,7 @@ export default function Home() {
               <select
                 value={priorityFilter}
                 onChange={e => setPriorityFilter(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem' }}
+                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '0.8rem' }}
               >
                 <option value="All">All Priorities</option>
                 <option value="Urgent">Urgent</option>
@@ -496,71 +580,58 @@ export default function Home() {
                 <option value="Low">Low</option>
               </select>
             </div>
-
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              Showing {filteredTickets.length} of {tickets.length} tickets
-            </span>
           </div>
 
-          {/* Tickets List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Tickets Table / List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {filteredTickets.map(t => (
-              <div key={t.id} className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+              <div key={t.id} className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600, fontSize: '0.9rem' }}>{t.id}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600, fontSize: '0.85rem' }}>{t.id}</span>
                       <span className={`badge badge-${t.priority.toLowerCase()}`}>{t.priority}</span>
                       <span className={`badge badge-${t.status.toLowerCase().replace(' ', '')}`}>{t.status}</span>
-                      <span style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: '6px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         {t.category}
                       </span>
                     </div>
-                    <h3 onClick={() => openTicketDetail(t)} style={{ fontSize: '1.1rem', fontWeight: 700, color: '#F9FAFB', cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}>
+                    <h3 onClick={() => openTicketDetail(t)} style={{ fontSize: '1rem', fontWeight: 700, color: '#F9FAFB', cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}>
                       {t.subject}
                     </h3>
                   </div>
 
-                  {/* SLA Badge */}
                   <div style={{ textAlign: 'right' }}>
-                    {t.slaBreached ? (
-                      <span className="badge badge-urgent" style={{ fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <IconAlert /> SLA Breached
-                      </span>
-                    ) : (
-                      <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '6px 12px', borderRadius: '8px', textAlign: 'right' }}>
-                        <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>SLA TARGET</p>
-                        <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#34D399' }}>
-                          {new Date(t.slaDeadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    )}
+                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '4px 10px', borderRadius: '6px', textAlign: 'right' }}>
+                      <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>SLA TARGET</p>
+                      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#34D399' }}>
+                        {new Date(t.slaDeadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <p style={{ color: '#D1D5DB', fontSize: '0.9rem', lineHeight: '1.5' }}>{t.description}</p>
+                <p style={{ color: '#D1D5DB', fontSize: '0.85rem', lineHeight: '1.4' }}>{t.description}</p>
 
-                {/* AI Insights Bar */}
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px 16px', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.8rem' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconUser /> <strong>Customer:</strong> {t.customerName}</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBot /> <strong>Agent:</strong> <span style={{ color: '#818CF8' }}>{t.assignedAgentName}</span></span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBrain /> <strong>AI Confidence:</strong> {(t.confidenceScore * 100).toFixed(0)}%</span>
-                    <span><strong>Sentiment:</strong> {t.sentiment}</span>
+                {/* AI Row Meta & Quick Actions */}
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.78rem' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconUser /> {t.customerName}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBot /> <span style={{ color: '#818CF8' }}>{t.assignedAgentName}</span></span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBrain /> Confidence: {(t.confidenceScore * 100).toFixed(0)}%</span>
                   </div>
 
-                  {/* Actions */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      <IconMessage /> View Thread & AI Reply
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <IconMessage /> View & AI Reply
                     </button>
                     {t.status !== 'Resolved' && t.status !== 'Closed' && (
-                      <button onClick={() => handleStatusChange(t.id, 'Resolved')} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                      <button onClick={() => handleStatusChange(t.id, 'Resolved')} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
                         Mark Resolved
                       </button>
                     )}
                     {t.status === 'Resolved' && !t.csatScore && (
-                      <button onClick={() => setCsatModalTicket(t)} style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                      <button onClick={() => setCsatModalTicket(t)} style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
                         Rate CSAT
                       </button>
                     )}
@@ -569,231 +640,32 @@ export default function Home() {
               </div>
             ))}
           </div>
+
         </div>
-      )}
 
-      {/* NEW STITCH INFOGRAPHICS & CHARTS TAB */}
-      {activeTab === 'infographics' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-panel" style={{ padding: '24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', alignItems: 'center' }}>
-            <RadialGaugeInfographic percentage={slaMetrics?.complianceRate || 96.4} label="SLA Target Compliance" />
-            <div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#38BDF8', marginBottom: '8px' }}>Stitch Visual SLA Compliance Infographic</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Real-time visual radial gauge indicating system SLA compliance performance. 96.4% of total customer support tickets are currently resolved well within target threshold windows.
-              </p>
-            </div>
-          </div>
-
-          {/* Sentiment Distribution Infographic */}
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFF', marginBottom: '16px' }}>Customer Sentiment Breakdown Infographic</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
-                  <span>Positive Sentiment</span>
-                  <span style={{ fontWeight: 600, color: '#10B981' }}>60%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', height: '12px', overflow: 'hidden' }}>
-                  <div style={{ width: '60%', background: '#10B981', height: '100%' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
-                  <span>Neutral / Inquiry Tone</span>
-                  <span style={{ fontWeight: 600, color: '#818CF8' }}>20%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', height: '12px', overflow: 'hidden' }}>
-                  <div style={{ width: '20%', background: '#818CF8', height: '100%' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
-                  <span>Negative / Issue Tone</span>
-                  <span style={{ fontWeight: 600, color: '#F59E0B' }}>15%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', height: '12px', overflow: 'hidden' }}>
-                  <div style={{ width: '15%', background: '#F59E0B', height: '100%' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
-                  <span>Frustrated / Urgent Escalation</span>
-                  <span style={{ fontWeight: 600, color: '#F43F5E' }}>5%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', height: '12px', overflow: 'hidden' }}>
-                  <div style={{ width: '5%', background: '#F43F5E', height: '100%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: AI ROUTING */}
-      {activeTab === 'routing' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px', color: '#818CF8', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <IconBrain /> Intelligent Agent Workload & Specialty Routing Engine
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-              Our AI Ticket Routing engine matches incoming customer tickets to support agents by computing a multi-factor score balancing domain specialty alignment (50%), remaining active queue capacity (30%), and agent CSAT performance rating (20%).
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-            {agents.map(a => (
-              <div key={a.id} className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                  <img src={a.avatar} alt={a.name} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
-                  <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF' }}>{a.name}</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{a.role}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                    <span>Active Queue Load</span>
-                    <span style={{ fontWeight: 600, color: '#818CF8' }}>{a.activeTickets} / {a.maxCapacity} tickets</span>
-                  </div>
-                  <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', height: '8px', overflow: 'hidden' }}>
-                    <div style={{ width: `${(a.activeTickets / a.maxCapacity) * 100}%`, background: 'var(--accent-gradient)', height: '100%' }}></div>
-                  </div>
-                </div>
-
-                <div>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '6px' }}>SPECIALTIES</p>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {a.specialties.map(spec => (
-                      <span key={spec} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem' }}>
-                        {spec}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 4: SLA TRACKING */}
-      {activeTab === 'sla' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="glass-panel" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
-            <div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#38BDF8' }}>SLA Compliance Benchmark</h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '4px' }}>Real-time service level agreement compliance tracking</p>
-            </div>
-            <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#10B981' }}>
-              {slaMetrics?.complianceRate || 96.4}%
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-            <div className="glass-panel" style={{ padding: '20px', textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>URGENT SLA (1h Target)</p>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#F43F5E', margin: '8px 0' }}>100% Met</h3>
-              <p style={{ fontSize: '0.75rem', color: '#10B981' }}>Avg Response: 8 mins</p>
-            </div>
-            <div className="glass-panel" style={{ padding: '20px', textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>HIGH SLA (4h Target)</p>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#F59E0B', margin: '8px 0' }}>94.2% Met</h3>
-              <p style={{ fontSize: '0.75rem', color: '#10B981' }}>Avg Response: 22 mins</p>
-            </div>
-            <div className="glass-panel" style={{ padding: '20px', textAlign: 'center' }}>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>MEDIUM SLA (12h Target)</p>
-              <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#818CF8', margin: '8px 0' }}>98.5% Met</h3>
-              <p style={{ fontSize: '0.75rem', color: '#10B981' }}>Avg Response: 45 mins</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 5: AGENT PERFORMANCE */}
-      {activeTab === 'agents' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-          {agents.map(a => (
-            <div key={a.id} className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <img src={a.avatar} alt={a.name} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
-                <div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFF' }}>{a.name}</h3>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{a.role}</p>
-                  <span style={{ color: '#FBBF24', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <IconStar filled /> {a.rating} Rating
-                  </span>
-                </div>
-              </div>
-
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>TICKETS RESOLVED</p>
-                  <p style={{ fontSize: '1.2rem', fontWeight: 800, color: '#10B981' }}>{a.ticketsResolved}</p>
-                </div>
-                <div>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>AVG HANDLE TIME</p>
-                  <p style={{ fontSize: '1.2rem', fontWeight: 800, color: '#38BDF8' }}>{a.avgHandleTimeMinutes} mins</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* TAB 6: CSAT ANALYTICS */}
-      {activeTab === 'csat' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FBBF24', marginBottom: '8px' }}>Customer Satisfaction (CSAT) Analytics</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Net Promoter Score (NPS): <strong>+78</strong> | Average CSAT: <strong>4.85 / 5.0</strong></p>
-          </div>
-
-          <div className="glass-panel" style={{ padding: '24px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px', color: '#FFF' }}>Recent Customer Feedback & Reviews</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {csatData?.recentFeedbacks?.map((f, idx) => (
-                <div key={idx} style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '8px', borderLeft: '3px solid #10B981' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: 600, color: '#F9FAFB' }}>{f.customerName} ({f.ticketId})</span>
-                    <span style={{ color: '#FBBF24', fontWeight: 700, display: 'flex', gap: '2px' }}>
-                      {[...Array(f.rating || 5)].map((_, i) => <IconStar key={i} filled />)}
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>"{f.feedback}"</p>
-                </div>
-              )) || <p style={{ color: 'var(--text-muted)' }}>No feedback entries available yet.</p>}
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* TICKET DETAIL & COMMENTS DRAWER MODAL */}
       {selectedTicket && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '750px', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '720px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', borderBottom: '1px solid var(--border-color)', paddingBottom: '10px' }}>
               <div>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600 }}>{selectedTicket.id}</span>
-                <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF', marginTop: '4px' }}>{selectedTicket.subject}</h2>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFF', marginTop: '2px' }}>{selectedTicket.subject}</h2>
               </div>
               <button onClick={() => setSelectedTicket(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.4rem', cursor: 'pointer' }}>✕</button>
             </div>
 
-            <p style={{ color: '#D1D5DB', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '20px' }}>{selectedTicket.description}</p>
+            <p style={{ color: '#D1D5DB', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '16px' }}>{selectedTicket.description}</p>
 
             {/* AI Suggested Response Section */}
-            <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '16px', borderRadius: '12px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <IconBot /> AI Smart Reply Generator
                 </span>
-                <button onClick={generateAIReplyDraft} disabled={isGeneratingReply} style={{ background: 'var(--accent-gradient)', border: 'none', color: '#FFF', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={generateAIReplyDraft} disabled={isGeneratingReply} style={{ background: 'var(--accent-gradient)', border: 'none', color: '#FFF', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
                   {isGeneratingReply ? 'Generating...' : 'Auto-Draft Response'}
                 </button>
               </div>
@@ -801,68 +673,34 @@ export default function Home() {
               {aiDraftReply ? (
                 <div>
                   <textarea value={aiDraftReply} onChange={e => setAiDraftReply(e.target.value)} rows={5} style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px', fontSize: '0.85rem' }} />
-                  <button onClick={() => { setNewCommentText(aiDraftReply); setAiDraftReply(''); }} style={{ marginTop: '8px', background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
-                    Use Draft in Comment Thread
+                  <button onClick={() => { setNewCommentText(aiDraftReply); setAiDraftReply(''); }} style={{ marginTop: '6px', background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                    Use Draft in Thread
                   </button>
                 </div>
               ) : (
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Click "Auto-Draft Response" to generate an empathetic, context-aware reply using AI.</p>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Click "Auto-Draft Response" to generate an empathetic response using AI.</p>
               )}
             </div>
 
             {/* Comments Thread */}
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#FFF', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <IconMessage /> Activity Timeline & Notes
             </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
               {comments.map((c, i) => (
-                <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #818CF8' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px', borderLeft: '3px solid #818CF8' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '2px' }}>
                     <span><strong>{c.author}</strong> ({c.role})</span>
                     <span>{new Date(c.timestamp).toLocaleTimeString()}</span>
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: '#E5E7EB' }}>{c.text}</p>
+                  <p style={{ fontSize: '0.8rem', color: '#E5E7EB' }}>{c.text}</p>
                 </div>
               ))}
             </div>
 
-            {/* Add Comment Form */}
             <form onSubmit={handleAddComment} style={{ display: 'flex', gap: '10px' }}>
-              <input type="text" value={newCommentText} onChange={e => setNewCommentText(e.target.value)} placeholder="Write an internal note or reply to customer..." required style={{ flex: 1, background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
-              <button type="submit" className="glow-btn">Post Note</button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* CSAT RATING MODAL */}
-      {csatModalTicket && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '450px', padding: '28px' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FBBF24', marginBottom: '8px' }}>Rate Support Experience</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '16px' }}>Ticket: {csatModalTicket.id} - {csatModalTicket.subject}</p>
-
-            <form onSubmit={handleSubmitCsat} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Rating (1 - 5 Stars)</label>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  {[1, 2, 3, 4, 5].map(num => (
-                    <button type="button" key={num} onClick={() => setCsatRating(num)} style={{ background: csatRating >= num ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.05)', color: csatRating >= num ? '#FBBF24' : 'var(--text-muted)', border: '1px solid var(--border-color)', padding: '10px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <IconStar filled={csatRating >= num} /> {num}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Customer Feedback</label>
-                <textarea value={csatFeedbackText} onChange={e => setCsatFeedbackText(e.target.value)} rows={3} placeholder="Share your experience..." required style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                <button type="button" onClick={() => setCsatModalTicket(null)} style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-muted)', padding: '8px 14px', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" className="glow-btn">Submit Rating</button>
-              </div>
+              <input type="text" value={newCommentText} onChange={e => setNewCommentText(e.target.value)} placeholder="Write an internal note..." required style={{ flex: 1, background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem' }} />
+              <button type="submit" className="glow-btn" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Post Note</button>
             </form>
           </div>
         </div>
@@ -871,59 +709,58 @@ export default function Home() {
       {/* CREATE TICKET MODAL WITH LIVE AI CLASSIFICATION */}
       {showCreateModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '650px', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '620px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 New Support Ticket + AI Live Inference
               </h2>
               <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.4rem', cursor: 'pointer' }}>✕</button>
             </div>
 
-            <form onSubmit={handleCreateTicket} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <form onSubmit={handleCreateTicket} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Customer Name</label>
-                  <input type="text" value={newCustomerName} onChange={e => setNewCustomerName(e.target.value)} placeholder="e.g. Alex Rivera" style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Customer Name</label>
+                  <input type="text" value={newCustomerName} onChange={e => setNewCustomerName(e.target.value)} placeholder="e.g. Alex Rivera" style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Customer Email</label>
-                  <input type="email" value={newCustomerEmail} onChange={e => setNewCustomerEmail(e.target.value)} placeholder="alex@company.com" style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Customer Email</label>
+                  <input type="email" value={newCustomerEmail} onChange={e => setNewCustomerEmail(e.target.value)} placeholder="alex@company.com" style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }} />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Ticket Subject *</label>
-                <input type="text" value={newSubject} onChange={e => setNewSubject(e.target.value)} placeholder="Describe the issue title..." required style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
+                <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Ticket Subject *</label>
+                <input type="text" value={newSubject} onChange={e => setNewSubject(e.target.value)} placeholder="Describe the issue title..." required style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }} />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Detailed Description *</label>
-                <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} rows={4} placeholder="Provide issue details..." required style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px', borderRadius: '8px' }} />
+                <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Detailed Description *</label>
+                <textarea value={newDesc} onChange={e => setNewDesc(e.target.value)} rows={4} placeholder="Provide issue details..." required style={{ width: '100%', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px', borderRadius: '8px', fontSize: '0.85rem' }} />
               </div>
 
-              {/* LIVE AI PREVIEW BOX */}
               {(aiPreview || isClassifying) && (
-                <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px dashed rgba(99, 102, 241, 0.4)', borderRadius: '10px', padding: '14px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px dashed rgba(99, 102, 241, 0.4)', borderRadius: '8px', padding: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <IconBot />
-                    <strong style={{ fontSize: '0.85rem', color: '#A5B4FC' }}>Live AI Classification & Routing Preview</strong>
-                    {isClassifying && <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Classifying...</span>}
+                    <strong style={{ fontSize: '0.8rem', color: '#A5B4FC' }}>Live AI Inference & Routing Preview</strong>
+                    {isClassifying && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Classifying...</span>}
                   </div>
 
                   {aiPreview && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.8rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.75rem' }}>
                       <div><strong>Category:</strong> <span style={{ color: '#38BDF8' }}>{aiPreview.category}</span></div>
                       <div><strong>Priority:</strong> <span style={{ color: '#F43F5E' }}>{aiPreview.priority} (SLA {aiPreview.slaTargetHours}h)</span></div>
                       <div><strong>Sentiment:</strong> <span style={{ color: '#FBBF24' }}>{aiPreview.sentiment}</span></div>
-                      <div><strong>Assigned Agent:</strong> <span style={{ color: '#34D399' }}>{aiPreview.assignedAgentName} ({aiPreview.routingMatchScore}%)</span></div>
+                      <div><strong>Agent:</strong> <span style={{ color: '#34D399' }}>{aiPreview.assignedAgentName} ({aiPreview.routingMatchScore}%)</span></div>
                     </div>
                   )}
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
-                <button type="button" onClick={() => setShowCreateModal(false)} style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-muted)', padding: '10px 18px', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" className="glow-btn">Submit Ticket</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+                <button type="button" onClick={() => setShowCreateModal(false)} style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-muted)', padding: '8px 14px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem' }}>Cancel</button>
+                <button type="submit" className="glow-btn" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>Submit Ticket</button>
               </div>
             </form>
           </div>
