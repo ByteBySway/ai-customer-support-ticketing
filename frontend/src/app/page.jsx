@@ -2,8 +2,91 @@
 
 import React, { useState, useEffect } from 'react';
 
-// Unified API base URL (relative for Vercel & local serverless compatibility)
+// Relative API Base URL for zero-config Vercel & local serverless compatibility
 const API_BASE = '/api';
+
+// Crisp SVG Icon Components (Guarantees 0 Encoding Glitches or Question Marks)
+const IconZap = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+);
+
+const IconTicket = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+    <path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" />
+  </svg>
+);
+
+const IconBot = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" />
+  </svg>
+);
+
+const IconClock = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const IconUsers = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+
+const IconStar = ({ filled = false }) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? "#FBBF24" : "none"} stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
+
+const IconSearch = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+);
+
+const IconDownload = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
+
+const IconUser = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const IconMessage = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+const IconBrain = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 5.562 5.562A3 3 0 1 0 12 15" />
+    <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-5.562 5.562A3 3 0 1 1 12 15" />
+    <path d="M12 4v16" />
+  </svg>
+);
+
+const IconAlert = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+    <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+  </svg>
+);
+
+const IconPlus = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('tickets');
@@ -11,7 +94,6 @@ export default function Home() {
   const [agents, setAgents] = useState([]);
   const [slaMetrics, setSlaMetrics] = useState(null);
   const [csatData, setCsatData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   // Filters
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -42,7 +124,6 @@ export default function Home() {
   // Fetch Data from Backend API
   const fetchData = async () => {
     try {
-      setLoading(true);
       const [ticketsRes, agentsRes, slaRes, csatRes] = await Promise.all([
         fetch(`${API_BASE}/tickets`).then(r => r.json()).catch(() => ({ success: false })),
         fetch(`${API_BASE}/agents`).then(r => r.json()).catch(() => ({ success: false })),
@@ -56,8 +137,6 @@ export default function Home() {
       if (csatRes.success) setCsatData(csatRes.data);
     } catch (err) {
       console.error('API Error:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -249,14 +328,16 @@ export default function Home() {
       {/* Header */}
       <header className="glass-panel" style={{ padding: '20px 28px', marginBottom: '28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ background: 'var(--accent-gradient)', padding: '12px 14px', borderRadius: '12px', fontSize: '1.4rem' }}>⚡</div>
+          <div style={{ background: 'var(--accent-gradient)', padding: '12px', borderRadius: '12px', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <IconZap />
+          </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h1 style={{ fontSize: '1.4rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 SupportPulse AI
               </h1>
               <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399' }}>
-                <span className="live-dot"></span> Vercel Live
+                <span className="live-dot"></span> Vercel Verified
               </span>
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
@@ -266,11 +347,11 @@ export default function Home() {
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px 16px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            📥 Export CSV
+          <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '10px 16px', borderRadius: '10px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <IconDownload /> Export CSV
           </button>
           <button onClick={() => setShowCreateModal(true)} className="glow-btn">
-            <span>+ Create AI Ticket</span>
+            <IconPlus /> Create AI Ticket
           </button>
         </div>
       </header>
@@ -280,7 +361,7 @@ export default function Home() {
         <div className="glass-panel" style={{ padding: '20px' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>TOTAL TICKETS</p>
           <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#F3F4F6' }}>{tickets.length}</h2>
-          <span style={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 600 }}>↑ 12% vs last week</span>
+          <span style={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 600 }}>+ 12% vs last week</span>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px' }}>
@@ -293,10 +374,10 @@ export default function Home() {
 
         <div className="glass-panel" style={{ padding: '20px' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>AVG CSAT SCORE</p>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#FBBF24' }}>
-            {csatData ? `${csatData.averageCsat} / 5.0` : '4.85 / 5.0'}
+          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '6px 0', color: '#FBBF24', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {csatData ? csatData.averageCsat : 4.85} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>/ 5.0</span>
           </h2>
-          <span style={{ color: '#FBBF24', fontSize: '0.75rem' }}>★★★★★ (98% positive)</span>
+          <span style={{ color: '#FBBF24', fontSize: '0.75rem' }}>98% positive reviews</span>
         </div>
 
         <div className="glass-panel" style={{ padding: '20px' }}>
@@ -311,19 +392,19 @@ export default function Home() {
       {/* Navigation Tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
         <button className={`tab-btn ${activeTab === 'tickets' ? 'active' : ''}`} onClick={() => setActiveTab('tickets')}>
-          🎫 Tickets Workspace ({tickets.length})
+          <IconTicket /> Tickets Workspace ({tickets.length})
         </button>
         <button className={`tab-btn ${activeTab === 'routing' ? 'active' : ''}`} onClick={() => setActiveTab('routing')}>
-          🤖 AI Ticket Routing
+          <IconBot /> AI Ticket Routing
         </button>
         <button className={`tab-btn ${activeTab === 'sla' ? 'active' : ''}`} onClick={() => setActiveTab('sla')}>
-          ⏱️ SLA Tracking
+          <IconClock /> SLA Tracking
         </button>
         <button className={`tab-btn ${activeTab === 'agents' ? 'active' : ''}`} onClick={() => setActiveTab('agents')}>
-          👥 Agent Performance
+          <IconUsers /> Agent Performance
         </button>
         <button className={`tab-btn ${activeTab === 'csat' ? 'active' : ''}`} onClick={() => setActiveTab('csat')}>
-          ⭐ CSAT Analytics
+          <IconStar filled /> CSAT Analytics
         </button>
       </div>
 
@@ -333,13 +414,18 @@ export default function Home() {
           {/* Controls Bar */}
           <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '20px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', flex: 1 }}>
-              <input
-                type="text"
-                placeholder="🔍 Search tickets by ID, subject, or customer..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 14px', borderRadius: '8px', width: '300px', fontSize: '0.9rem' }}
-              />
+              <div style={{ position: 'relative', width: '300px' }}>
+                <input
+                  type="text"
+                  placeholder="Search tickets by ID, subject..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 14px 8px 36px', borderRadius: '8px', width: '100%', fontSize: '0.9rem' }}
+                />
+                <div style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+                  <IconSearch />
+                </div>
+              </div>
 
               <select
                 value={categoryFilter}
@@ -393,7 +479,9 @@ export default function Home() {
                   {/* SLA Badge */}
                   <div style={{ textAlign: 'right' }}>
                     {t.slaBreached ? (
-                      <span className="badge badge-urgent" style={{ fontSize: '0.8rem' }}>⚠️ SLA Breached</span>
+                      <span className="badge badge-urgent" style={{ fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <IconAlert /> SLA Breached
+                      </span>
                     ) : (
                       <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '6px 12px', borderRadius: '8px', textAlign: 'right' }}>
                         <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>SLA TARGET</p>
@@ -410,16 +498,16 @@ export default function Home() {
                 {/* AI Insights Bar */}
                 <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px 16px', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.8rem' }}>
-                    <span>👤 <strong>Customer:</strong> {t.customerName}</span>
-                    <span>🤖 <strong>Assigned Agent:</strong> <span style={{ color: '#818CF8' }}>{t.assignedAgentName}</span></span>
-                    <span>🧠 <strong>AI Confidence:</strong> {(t.confidenceScore * 100).toFixed(0)}%</span>
-                    <span>💬 <strong>Sentiment:</strong> {t.sentiment}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconUser /> <strong>Customer:</strong> {t.customerName}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBot /> <strong>Agent:</strong> <span style={{ color: '#818CF8' }}>{t.assignedAgentName}</span></span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBrain /> <strong>AI Confidence:</strong> {(t.confidenceScore * 100).toFixed(0)}%</span>
+                    <span><strong>Sentiment:</strong> {t.sentiment}</span>
                   </div>
 
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
-                      💬 View Thread & AI Reply
+                    <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <IconMessage /> View Thread & AI Reply
                     </button>
                     {t.status !== 'Resolved' && t.status !== 'Closed' && (
                       <button onClick={() => handleStatusChange(t.id, 'Resolved')} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
@@ -428,7 +516,7 @@ export default function Home() {
                     )}
                     {t.status === 'Resolved' && !t.csatScore && (
                       <button onClick={() => setCsatModalTicket(t)} style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
-                        ⭐ Rate CSAT
+                        Rate CSAT
                       </button>
                     )}
                   </div>
@@ -443,8 +531,8 @@ export default function Home() {
       {activeTab === 'routing' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="glass-panel" style={{ padding: '24px' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px', color: '#818CF8' }}>
-              🧠 Intelligent Agent Workload & Specialty Routing Engine
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px', color: '#818CF8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <IconBrain /> Intelligent Agent Workload & Specialty Routing Engine
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
               Our AI Ticket Routing engine matches incoming customer tickets to support agents by computing a multi-factor score balancing domain specialty alignment (50%), remaining active queue capacity (30%), and agent CSAT performance rating (20%).
@@ -531,7 +619,9 @@ export default function Home() {
                 <div>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#FFF' }}>{a.name}</h3>
                   <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{a.role}</p>
-                  <span style={{ color: '#FBBF24', fontSize: '0.85rem', fontWeight: 600 }}>★ {a.rating} Rating</span>
+                  <span style={{ color: '#FBBF24', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <IconStar filled /> {a.rating} Rating
+                  </span>
                 </div>
               </div>
 
@@ -565,7 +655,9 @@ export default function Home() {
                 <div key={idx} style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '8px', borderLeft: '3px solid #10B981' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <span style={{ fontWeight: 600, color: '#F9FAFB' }}>{f.customerName} ({f.ticketId})</span>
-                    <span style={{ color: '#FBBF24', fontWeight: 700 }}>{'★'.repeat(f.rating)}</span>
+                    <span style={{ color: '#FBBF24', fontWeight: 700, display: 'flex', gap: '2px' }}>
+                      {[...Array(f.rating || 5)].map((_, i) => <IconStar key={i} filled />)}
+                    </span>
                   </div>
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>"{f.feedback}"</p>
                 </div>
@@ -592,9 +684,11 @@ export default function Home() {
             {/* AI Suggested Response Section */}
             <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '16px', borderRadius: '12px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.9rem' }}>🤖 AI Smart Reply Generator</span>
+                <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <IconBot /> AI Smart Reply Generator
+                </span>
                 <button onClick={generateAIReplyDraft} disabled={isGeneratingReply} style={{ background: 'var(--accent-gradient)', border: 'none', color: '#FFF', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
-                  {isGeneratingReply ? 'Generating...' : '✨ Auto-Draft Response'}
+                  {isGeneratingReply ? 'Generating...' : 'Auto-Draft Response'}
                 </button>
               </div>
 
@@ -611,7 +705,9 @@ export default function Home() {
             </div>
 
             {/* Comments Thread */}
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF', marginBottom: '12px' }}>💬 Activity Timeline & Notes</h3>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <IconMessage /> Activity Timeline & Notes
+            </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
               {comments.map((c, i) => (
                 <div key={i} style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid #818CF8' }}>
@@ -645,8 +741,8 @@ export default function Home() {
                 <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '6px' }}>Rating (1 - 5 Stars)</label>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   {[1, 2, 3, 4, 5].map(num => (
-                    <button type="button" key={num} onClick={() => setCsatRating(num)} style={{ background: csatRating >= num ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.05)', color: csatRating >= num ? '#FBBF24' : 'var(--text-muted)', border: '1px solid var(--border-color)', padding: '10px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '1.1rem' }}>
-                      ★ {num}
+                    <button type="button" key={num} onClick={() => setCsatRating(num)} style={{ background: csatRating >= num ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255,255,255,0.05)', color: csatRating >= num ? '#FBBF24' : 'var(--text-muted)', border: '1px solid var(--border-color)', padding: '10px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <IconStar filled={csatRating >= num} /> {num}
                     </button>
                   ))}
                 </div>
@@ -703,7 +799,7 @@ export default function Home() {
               {(aiPreview || isClassifying) && (
                 <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px dashed rgba(99, 102, 241, 0.4)', borderRadius: '10px', padding: '14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '1rem' }}>🤖</span>
+                    <IconBot />
                     <strong style={{ fontSize: '0.85rem', color: '#A5B4FC' }}>Live AI Classification & Routing Preview</strong>
                     {isClassifying && <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Classifying...</span>}
                   </div>
