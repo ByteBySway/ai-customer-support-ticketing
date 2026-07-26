@@ -13,7 +13,7 @@
 
 ## 🌐 Live Production Demo
 * **Live Web App**: [https://resolvai-platform.vercel.app](https://resolvai-platform.vercel.app)
-* **GitHub Repository**: [https://github.com/ByteBySway/ai-customer-support-ticketing](https://github.com/ByteBySway/ai-customer-support-ticketing)
+* **GitHub Repository**: [https://github.com/ByteBySway/resolvai](https://github.com/ByteBySway/resolvai)
 
 ---
 
@@ -76,8 +76,8 @@ graph TD
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/ByteBySway/ai-customer-support-ticketing.git
-   cd ai-customer-support-ticketing
+   git clone https://github.com/ByteBySway/resolvai.git
+   cd resolvai
    ```
 
 2. **Install Frontend Dependencies**:
