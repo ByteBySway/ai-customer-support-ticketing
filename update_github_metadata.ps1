@@ -20,7 +20,7 @@ $headers = @{
 }
 
 $updateObj = @{
-    description = "Award-Winning AI-Based Customer Support Ticketing System built with Next.js 14, Python ML (TF-IDF), Node.js, and Vercel. Features automated ticket routing, SLA tracking, agent workload analytics, CSAT metrics, and an interactive AI Copilot Bot."
+    description = "ResolvAI: Enterprise AI-Powered Customer Support and SLA Automation Platform built with Next.js 14, Python ML (TF-IDF), Node.js, and Vercel. Features automated ticket classification, AI routing, SLA tracking, agent workload analytics, CSAT metrics, and an interactive AI Copilot Bot."
     homepage    = "https://ai-customer-support-ticketing.vercel.app"
 }
 
@@ -38,7 +38,7 @@ try {
 
 # Update topics
 $topicsObj = @{
-    names = @("nextjs", "python", "machine-learning", "ai-support", "ticketing-system", "sla-tracking", "csat-analytics", "nodejs", "vercel", "fullstack", "react", "mongodb", "automation", "copilot-bot")
+    names = @("resolvai", "nextjs", "python", "machine-learning", "ai-support", "ticketing-system", "sla-tracking", "csat-analytics", "nodejs", "vercel", "fullstack", "react", "mongodb", "automation", "copilot-bot")
 }
 $topicsJson = $topicsObj | ConvertTo-Json
 $topicsBytes = [System.Text.Encoding]::UTF8.GetBytes($topicsJson)

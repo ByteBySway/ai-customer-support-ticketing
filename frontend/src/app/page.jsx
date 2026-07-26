@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const API_BASE = '/api';
 
-// Crisp, Resolution-Independent SVG Icons (Zero string emojis to eliminate question mark rendering bugs)
+// Crisp, Resolution-Independent SVG Icons
 const IconZap = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -32,7 +32,7 @@ const IconClock = () => (
 
 const IconUsers = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 1 0 7.75" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
   </svg>
 );
 
@@ -176,7 +176,7 @@ export default function Home() {
   // AI Copilot Bot State
   const [showBotDrawer, setShowBotDrawer] = useState(false);
   const [botMessages, setBotMessages] = useState([
-    { sender: 'bot', text: 'Hello! I am SupportPulse AI Bot. Ask me about SLA compliance, urgent tickets, or request automated replies!' }
+    { sender: 'bot', text: 'Hello! I am ResolvAI Bot. Ask me about SLA compliance, urgent tickets, or request automated replies!' }
   ]);
   const [botInputText, setBotInputText] = useState('');
   const chatEndRef = useRef(null);
@@ -356,18 +356,18 @@ export default function Home() {
     setBotInputText('');
 
     setTimeout(() => {
-      let botResponse = "I'm analyzing your request. Current SLA compliance is 96.4% and all 4 support agents are online.";
+      let botResponse = "I'm analyzing your request via ResolvAI engine. Current SLA compliance is 96.4% and all support agents are online.";
       const q = userQuery.toLowerCase();
 
       if (q.includes('sla') || q.includes('target')) {
         botResponse = `SLA Compliance is currently at ${slaMetrics ? slaMetrics.complianceRate : '96.4'}%. Urgent tickets have a 1-hour SLA target.`;
       } else if (q.includes('ticket') || q.includes('urgent')) {
         const urgentCount = tickets.filter(t => t.priority === 'Urgent').length;
-        botResponse = `There are currently ${tickets.length} total tickets loaded, with ${urgentCount} classified as Urgent priority.`;
+        botResponse = `There are currently ${tickets.length} total tickets loaded in ResolvAI, with ${urgentCount} classified as Urgent priority.`;
       } else if (q.includes('agent') || q.includes('team')) {
-        botResponse = `We have ${agents.length || 4} agents configured. Available capacity is optimal across Tier 1 and Tier 2 support queues.`;
+        botResponse = `We have ${agents.length || 4} agents configured in ResolvAI. Workload capacity is balanced across Tier 1 and Tier 2 support queues.`;
       } else if (q.includes('hello') || q.includes('hi')) {
-        botResponse = "Hello! How can I assist your support team today?";
+        botResponse = "Hello! How can ResolvAI assist your support team today?";
       }
 
       setBotMessages([...newMsgList, { sender: 'bot', text: botResponse }]);
@@ -386,7 +386,7 @@ export default function Home() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `support_tickets_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `resolvai_tickets_export_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -415,10 +415,10 @@ export default function Home() {
             <IconZap />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.3rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              SupportPulse AI Platform
+            <h1 style={{ fontSize: '1.4rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              ResolvAI Platform
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Automated Ticket Routing, SLA Tracking & Analytics</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Intelligent Support Ticketing, Routing & SLA Automation Engine</p>
           </div>
         </div>
 
@@ -464,7 +464,7 @@ export default function Home() {
         {/* Action Header Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div onClick={() => setShowBotDrawer(true)} style={{ color: '#A5B4FC', cursor: 'pointer', padding: '8px 12px', borderRadius: '8px', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600 }}>
-            <IconBot /> AI Copilot Bot
+            <IconBot /> ResolvAI Bot
           </div>
           <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
             <IconDownload /> Export CSV
@@ -823,7 +823,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* VIEW 4: DYNAMIC SETTINGS TAB SCREEN (CLEAN SVG BADGES) */}
+      {/* VIEW 4: DYNAMIC SETTINGS TAB SCREEN */}
       {activeTab === 'Settings' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="glass-panel" style={{ padding: '24px' }}>
@@ -891,7 +891,7 @@ export default function Home() {
             boxShadow: '0 8px 24px rgba(99, 102, 241, 0.6)',
             cursor: 'pointer'
           }}
-          title="Open AI Support Copilot Bot"
+          title="Open ResolvAI Copilot Bot"
         >
           <IconBot size={24} />
         </button>
@@ -903,7 +903,7 @@ export default function Home() {
           <div style={{ padding: '14px 18px', background: 'rgba(0,0,0,0.4)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <IconBot />
-              <strong style={{ fontSize: '0.9rem', color: '#FFF' }}>SupportPulse AI Bot</strong>
+              <strong style={{ fontSize: '0.9rem', color: '#FFF' }}>ResolvAI Bot</strong>
             </div>
             <button onClick={() => setShowBotDrawer(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
               <IconClose />
@@ -924,7 +924,7 @@ export default function Home() {
               type="text"
               value={botInputText}
               onChange={e => setBotInputText(e.target.value)}
-              placeholder="Ask AI bot..."
+              placeholder="Ask ResolvAI bot..."
               style={{ flex: 1, background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 12px', borderRadius: '8px', fontSize: '0.8rem' }}
             />
             <button type="submit" className="glow-btn" style={{ padding: '8px 12px' }}>
@@ -953,7 +953,7 @@ export default function Home() {
             <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <IconBot /> AI Smart Reply Generator
+                  <IconBot /> ResolvAI Smart Reply Generator
                 </span>
                 <button onClick={generateAIReplyDraft} disabled={isGeneratingReply} style={{ background: 'var(--accent-gradient)', border: 'none', color: '#FFF', padding: '4px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}>
                   {isGeneratingReply ? 'Generating...' : 'Auto-Draft Response'}
@@ -1001,7 +1001,7 @@ export default function Home() {
           <div className="glass-panel" style={{ width: '100%', maxWidth: '620px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                New Support Ticket + AI Live Inference
+                New Support Ticket + ResolvAI Inference
               </h2>
               <button onClick={() => setShowCreateModal(false)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.8rem' }}>
                 <IconClose /> Close
@@ -1034,7 +1034,7 @@ export default function Home() {
                 <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px dashed rgba(99, 102, 241, 0.4)', borderRadius: '8px', padding: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <IconBot />
-                    <strong style={{ fontSize: '0.8rem', color: '#A5B4FC' }}>Live AI Inference & Routing Preview</strong>
+                    <strong style={{ fontSize: '0.8rem', color: '#A5B4FC' }}>ResolvAI Inference & Routing Preview</strong>
                     {isClassifying && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Classifying...</span>}
                   </div>
 

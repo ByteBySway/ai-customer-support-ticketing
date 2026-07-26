@@ -1,16 +1,16 @@
-# 🚀 SupportPulse AI: AI-Based Customer Support Ticketing Platform
+# 🚀 ResolvAI: Enterprise AI Customer Support & SLA Platform
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-customer-support-ticketing.vercel.app)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14.2-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Python ML](https://img.shields.io/badge/Python-3.11_ML-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-> **SupportPulse AI** is an enterprise-grade, full-stack AI-Powered Customer Support Ticketing & SLA Automation Platform. Built with **Next.js 14 (App Router)**, **Python Machine Learning (TF-IDF Vectorization)**, **Node.js**, and **Vercel Serverless Architecture**, it delivers automated ticket classification, intelligent agent routing, real-time SLA breach tracking, customer sentiment analytics, and an interactive **AI Copilot Bot**.
+> **ResolvAI** is an enterprise-grade, full-stack AI-Powered Customer Support Ticketing & SLA Automation Platform. Built with **Next.js 14 (App Router)**, **Python Machine Learning (TF-IDF Vectorization)**, **Node.js**, and **Vercel Serverless Architecture**, it delivers automated ticket classification, intelligent agent routing, real-time SLA breach tracking, customer sentiment analytics, and an interactive **ResolvAI Copilot Bot**.
 
 ---
 
 ## 🌐 Live Production Demo
-* **Live Website**: [https://ai-customer-support-ticketing.vercel.app](https://ai-customer-support-ticketing.vercel.app)
+* **Live Web App**: [https://ai-customer-support-ticketing.vercel.app](https://ai-customer-support-ticketing.vercel.app)
 * **GitHub Repository**: [https://github.com/ByteBySway/ai-customer-support-ticketing](https://github.com/ByteBySway/ai-customer-support-ticketing)
 
 ---
@@ -25,7 +25,7 @@
 - Dynamic SLA target countdown timers (`1h` Urgent, `4h` High, `12h` Medium, `24h` Low).
 - **Stitch Circular SLA Donut Infographic**: Real-time visual compliance gauge displaying `96.4%` SLA target performance.
 
-### 🤖 3. Interactive AI Support Copilot Bot
+### 🤖 3. Interactive ResolvAI Copilot Bot
 - Floating interactive chat assistant drawer in the bottom right corner.
 - Answers support manager queries regarding SLA compliance, active ticket counts, agent capacity, and auto-drafting empathetic responses.
 
@@ -88,7 +88,7 @@ graph TD
    ```bash
    npm run dev
    ```
-   Open `http://localhost:3000` in your browser to view the application!
+   Open `http://localhost:3000` in your browser to view **ResolvAI**!
 
 ---
 
