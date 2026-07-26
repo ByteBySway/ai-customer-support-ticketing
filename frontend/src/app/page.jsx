@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const API_BASE = '/api';
 
-// Crisp, Resolution-Independent SVG Icons (Zero string emojis to eliminate question mark rendering bugs)
+// Crisp, Resolution-Independent SVG Icons
 const IconZap = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -18,8 +18,8 @@ const IconTicket = () => (
   </svg>
 );
 
-const IconBot = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const IconBot = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" />
   </svg>
 );
@@ -98,6 +98,12 @@ const IconChart = () => (
   </svg>
 );
 
+const IconSend = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+
 // Stitch Donut SLA Gauge Component
 const StitchSLADonut = ({ percentage = 96.4 }) => {
   const radius = 50;
@@ -167,6 +173,14 @@ export default function Home() {
   const [csatRating, setCsatRating] = useState(5);
   const [csatFeedbackText, setCsatFeedbackText] = useState('');
 
+  // AI Copilot Bot State
+  const [showBotDrawer, setShowBotDrawer] = useState(false);
+  const [botMessages, setBotMessages] = useState([
+    { sender: 'bot', text: 'Hello! I am SupportPulse AI Bot. Ask me about SLA compliance, urgent tickets, or request automated replies!' }
+  ]);
+  const [botInputText, setBotInputText] = useState('');
+  const chatEndRef = useRef(null);
+
   const fetchData = async () => {
     try {
       const [ticketsRes, agentsRes, slaRes, csatRes] = await Promise.all([
@@ -190,6 +204,10 @@ export default function Home() {
     const interval = setInterval(fetchData, 12000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [botMessages]);
 
   // Live AI Classification Debounce
   useEffect(() => {
@@ -328,6 +346,34 @@ export default function Home() {
     }
   };
 
+  const handleBotSubmit = (e) => {
+    e.preventDefault();
+    if (!botInputText.trim()) return;
+
+    const userQuery = botInputText.trim();
+    const newMsgList = [...botMessages, { sender: 'user', text: userQuery }];
+    setBotMessages(newMsgList);
+    setBotInputText('');
+
+    setTimeout(() => {
+      let botResponse = "I'm analyzing your request. Current SLA compliance is 96.4% and all 4 support agents are online.";
+      const q = userQuery.toLowerCase();
+
+      if (q.includes('sla') || q.includes('target')) {
+        botResponse = `SLA Compliance is currently at ${slaMetrics ? slaMetrics.complianceRate : '96.4'}%. Urgent tickets have a 1-hour SLA target.`;
+      } else if (q.includes('ticket') || q.includes('urgent')) {
+        const urgentCount = tickets.filter(t => t.priority === 'Urgent').length;
+        botResponse = `There are currently ${tickets.length} total tickets loaded, with ${urgentCount} classified as Urgent priority.`;
+      } else if (q.includes('agent') || q.includes('team')) {
+        botResponse = `We have ${agents.length || 4} agents configured. Available capacity is optimal across Tier 1 and Tier 2 support queues.`;
+      } else if (q.includes('hello') || q.includes('hi')) {
+        botResponse = "Hello! How can I assist your support team today?";
+      }
+
+      setBotMessages([...newMsgList, { sender: 'bot', text: botResponse }]);
+    }, 500);
+  };
+
   const exportToCSV = () => {
     if (tickets.length === 0) return;
     const headers = ['ID', 'Customer', 'Email', 'Subject', 'Category', 'Priority', 'Status', 'Assigned Agent', 'Sentiment', 'SLA Deadline'];
@@ -362,7 +408,7 @@ export default function Home() {
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '20px' }}>
-      {/* Top Header */}
+      {/* Top Navigation Header */}
       <header className="glass-panel" style={{ padding: '16px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ background: 'var(--accent-gradient)', padding: '10px', borderRadius: '10px', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -370,13 +416,13 @@ export default function Home() {
           </div>
           <div>
             <h1 style={{ fontSize: '1.3rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              SupportPulse AI Dashboard
+              SupportPulse AI Platform
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Automated Ticket Routing, SLA Tracking & Analytics</p>
           </div>
         </div>
 
-        {/* Top Navigation Tabs + Explicit Close View Option */}
+        {/* Dynamic Tab Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '10px' }}>
           {['Dashboard', 'Analytics', 'Team', 'Settings'].map(tab => (
             <button
@@ -408,7 +454,7 @@ export default function Home() {
                 alignItems: 'center',
                 gap: '4px'
               }}
-              title="Close Feature View & Return to Main Dashboard"
+              title="Close Current View & Return to Dashboard"
             >
               <IconClose /> Close View
             </button>
@@ -417,8 +463,8 @@ export default function Home() {
 
         {/* Action Header Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ color: 'var(--text-muted)', cursor: 'pointer', padding: '8px', borderRadius: '8px', background: 'rgba(255,255,255,0.04)' }}>
-            <IconBell />
+          <div onClick={() => setShowBotDrawer(true)} style={{ color: '#A5B4FC', cursor: 'pointer', padding: '8px 12px', borderRadius: '8px', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 600 }}>
+            <IconBot /> AI Copilot Bot
           </div>
           <button onClick={exportToCSV} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
             <IconDownload /> Export CSV
@@ -429,349 +475,467 @@ export default function Home() {
         </div>
       </header>
 
-      {/* KPI Cards Overview */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        <div className="glass-panel" style={{ padding: '18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span>Total Tickets</span>
-            <IconTicket />
-          </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#F3F4F6' }}>{tickets.length || 148}</h2>
-          <span style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>+12% growth</span>
-        </div>
+      {/* Dynamic Screen View Controller */}
 
-        <div className="glass-panel" style={{ padding: '18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span>SLA Compliance</span>
-            <IconClock />
-          </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#38BDF8' }}>
-            {slaMetrics ? `${slaMetrics.complianceRate}%` : '96.4%'}
-          </h2>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target 95%</span>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span>Avg CSAT</span>
-            <IconStar filled />
-          </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#FBBF24' }}>
-            {csatData ? csatData.averageCsat : 4.85} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>/ 5.0</span>
-          </h2>
-          <div style={{ display: 'flex', gap: '2px', marginTop: '2px' }}>
-            {[1, 2, 3, 4, 5].map(s => <IconStar key={s} filled />)}
-          </div>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-            <span>Available Agents</span>
-            <IconUsers />
-          </div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#A7F3D0' }}>
-            {agents.filter(a => a.status === 'Available').length} / {agents.length || 4}
-          </h2>
-          <span style={{ color: '#34D399', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <span className="live-dot"></span> Online & Operational
-          </span>
-        </div>
-      </div>
-
-      {/* SUB-VIEW 1: ANALYTICS FEATURE VIEW (WITH CLOSE OPTION) */}
-      {activeTab === 'Analytics' && (
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <IconChart /> Analytics & CSAT Insights Dashboard
-            </h2>
-            <button onClick={() => setActiveTab('Dashboard')} style={{ background: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '6px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
-              <IconClose /> Close View
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+      {/* VIEW 1: MAIN DASHBOARD TAB */}
+      {activeTab === 'Dashboard' && (
+        <div>
+          {/* KPI Cards Overview */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
             <div className="glass-panel" style={{ padding: '18px' }}>
-              <h3 style={{ fontSize: '0.9rem', color: '#A5B4FC', marginBottom: '10px' }}>Net Promoter Score (NPS)</h3>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#10B981' }}>+78</h1>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Top Tier Customer Satisfaction</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                <span>Total Tickets</span>
+                <IconTicket />
+              </div>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#F3F4F6' }}>{tickets.length || 148}</h2>
+              <span style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', fontSize: '0.7rem', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>+12% growth</span>
             </div>
+
             <div className="glass-panel" style={{ padding: '18px' }}>
-              <h3 style={{ fontSize: '0.9rem', color: '#A5B4FC', marginBottom: '10px' }}>First Contact Resolution (FCR)</h3>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#38BDF8' }}>88.4%</h1>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Resolved on first response</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                <span>SLA Compliance</span>
+                <IconClock />
+              </div>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#38BDF8' }}>
+                {slaMetrics ? `${slaMetrics.complianceRate}%` : '96.4%'}
+              </h2>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Target 95%</span>
             </div>
+
             <div className="glass-panel" style={{ padding: '18px' }}>
-              <h3 style={{ fontSize: '0.9rem', color: '#A5B4FC', marginBottom: '10px' }}>Avg Handle Time (AHT)</h3>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#FBBF24' }}>14m 20s</h1>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>32% faster with AI Assistance</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SUB-VIEW 2: TEAM FEATURE VIEW (WITH CLOSE OPTION) */}
-      {activeTab === 'Team' && (
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <IconUsers /> Support Agent Performance & Workload
-            </h2>
-            <button onClick={() => setActiveTab('Dashboard')} style={{ background: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '6px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
-              <IconClose /> Close View
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-            {agents.map(a => (
-              <div key={a.id} className="glass-panel" style={{ padding: '18px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontWeight: 700, color: '#FFF', fontSize: '0.95rem' }}>{a.name}</span>
-                  <span className={`badge ${a.status === 'Available' ? 'badge-resolved' : 'badge-urgent'}`}>{a.status}</span>
-                </div>
-                <p style={{ fontSize: '0.8rem', color: '#A5B4FC', marginBottom: '6px' }}>Role: {a.role}</p>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span>Active Load: <strong>{a.activeTickets} / {a.maxCapacity} tickets</strong></span>
-                  <span>Specialties: {a.specialties ? a.specialties.join(', ') : 'General Support'}</span>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                <span>Avg CSAT</span>
+                <IconStar filled />
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#FBBF24' }}>
+                {csatData ? csatData.averageCsat : 4.85} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>/ 5.0</span>
+              </h2>
+              <div style={{ display: 'flex', gap: '2px', marginTop: '2px' }}>
+                {[1, 2, 3, 4, 5].map(s => <IconStar key={s} filled />)}
+              </div>
+            </div>
 
-      {/* SUB-VIEW 3: SETTINGS FEATURE VIEW (WITH CLOSE OPTION) */}
-      {activeTab === 'Settings' && (
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <IconBot /> SLA Policy & AI Routing Settings
-            </h2>
-            <button onClick={() => setActiveTab('Dashboard')} style={{ background: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '6px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
-              <IconClose /> Close View
-            </button>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div className="glass-panel" style={{ padding: '18px' }}>
-              <h3 style={{ fontSize: '0.9rem', color: '#A5B4FC', marginBottom: '12px' }}>SLA Target Rules</h3>
-              <ul style={{ fontSize: '0.85rem', color: '#E5E7EB', display: 'flex', flexDirection: 'column', gap: '8px', listStyle: 'none' }}>
-                <li>🔥 Urgent Priority SLA Target: <strong>1 Hour</strong></li>
-                <li>⚡ High Priority SLA Target: <strong>4 Hours</strong></li>
-                <li>🔹 Medium Priority SLA Target: <strong>12 Hours</strong></li>
-                <li>🟢 Low Priority SLA Target: <strong>24 Hours</strong></li>
-              </ul>
-            </div>
-            <div className="glass-panel" style={{ padding: '18px' }}>
-              <h3 style={{ fontSize: '0.9rem', color: '#A5B4FC', marginBottom: '12px' }}>AI Routing Parameters</h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '10px' }}>Minimum Confidence Threshold for Auto Routing: <strong>85%</strong></p>
-              <input type="range" min="50" max="95" defaultValue="85" style={{ width: '100%' }} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main 2-Column Stitch Dashboard Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 340px) 1fr', gap: '20px' }}>
-        
-        {/* LEFT COLUMN: STITCH INFOGRAPHICS STACK */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
-          {/* Donut Infographic */}
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <IconClock /> SLA Compliance Gauge
-            </h3>
-            <StitchSLADonut percentage={slaMetrics?.complianceRate || 96.4} />
-          </div>
-
-          {/* Sentiment Distribution Bars */}
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <IconBrain /> Sentiment Analytics
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                  <span style={{ color: '#10B981', fontWeight: 600 }}>Positive</span>
-                  <span style={{ color: 'var(--text-muted)' }}>60%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
-                  <div style={{ width: '60%', background: '#10B981', height: '100%', borderRadius: '4px' }}></div>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                <span>Available Agents</span>
+                <IconUsers />
               </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                  <span style={{ color: '#38BDF8', fontWeight: 600 }}>Neutral</span>
-                  <span style={{ color: 'var(--text-muted)' }}>20%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
-                  <div style={{ width: '20%', background: '#38BDF8', height: '100%', borderRadius: '4px' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                  <span style={{ color: '#F59E0B', fontWeight: 600 }}>Negative</span>
-                  <span style={{ color: 'var(--text-muted)' }}>15%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
-                  <div style={{ width: '15%', background: '#F59E0B', height: '100%', borderRadius: '4px' }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                  <span style={{ color: '#F43F5E', fontWeight: 600 }}>Frustrated</span>
-                  <span style={{ color: 'var(--text-muted)' }}>5%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
-                  <div style={{ width: '5%', background: '#F43F5E', height: '100%', borderRadius: '4px' }}></div>
-                </div>
-              </div>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#A7F3D0' }}>
+                {agents.filter(a => a.status === 'Available').length} / {agents.length || 4}
+              </h2>
+              <span style={{ color: '#34D399', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span className="live-dot"></span> Online & Operational
+              </span>
             </div>
           </div>
 
-          {/* Queue Workload Infographic */}
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <IconUsers /> Queue Workload
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                  <span>Tier 1 Support</span>
-                  <span style={{ fontWeight: 600, color: '#EC4899' }}>85%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
-                  <div style={{ width: '85%', background: '#EC4899', height: '100%', borderRadius: '4px' }}></div>
-                </div>
+          {/* 2-Column Stitch Dashboard Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 340px) 1fr', gap: '20px' }}>
+            
+            {/* Left Column: Stitch Infographics Stack */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <IconClock /> SLA Compliance Gauge
+                </h3>
+                <StitchSLADonut percentage={slaMetrics?.complianceRate || 96.4} />
               </div>
 
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                  <span>Tier 2 Specialists</span>
-                  <span style={{ fontWeight: 600, color: '#8B5CF6' }}>45%</span>
-                </div>
-                <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
-                  <div style={{ width: '45%', background: '#8B5CF6', height: '100%', borderRadius: '4px' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* RIGHT COLUMN: TICKETS WORKSPACE TABLE & CONTROLS */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          
-          {/* Controls Bar */}
-          <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: 1 }}>
-              <div style={{ position: 'relative', width: '260px' }}>
-                <input
-                  type="text"
-                  placeholder="Search tickets, customers..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 12px 6px 32px', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
-                />
-                <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
-                  <IconSearch />
-                </div>
-              </div>
-
-              <select
-                value={categoryFilter}
-                onChange={e => setCategoryFilter(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '0.8rem' }}
-              >
-                <option value="All">All Categories</option>
-                <option value="Technical & Bugs">Technical & Bugs</option>
-                <option value="Billing & Payments">Billing & Payments</option>
-                <option value="Account & Security">Account & Security</option>
-                <option value="Feature Requests">Feature Requests</option>
-              </select>
-
-              <select
-                value={priorityFilter}
-                onChange={e => setPriorityFilter(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '0.8rem' }}
-              >
-                <option value="All">All Priorities</option>
-                <option value="Urgent">Urgent</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Tickets Table / List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {filteredTickets.map(t => (
-              <div key={t.id} className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <IconBrain /> Sentiment Analytics
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600, fontSize: '0.85rem' }}>{t.id}</span>
-                      <span className={`badge badge-${t.priority.toLowerCase()}`}>{t.priority}</span>
-                      <span className={`badge badge-${t.status.toLowerCase().replace(' ', '')}`}>{t.status}</span>
-                      <span style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        {t.category}
-                      </span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                      <span style={{ color: '#10B981', fontWeight: 600 }}>Positive</span>
+                      <span style={{ color: 'var(--text-muted)' }}>60%</span>
                     </div>
-                    <h3 onClick={() => openTicketDetail(t)} style={{ fontSize: '1rem', fontWeight: 700, color: '#F9FAFB', cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}>
-                      {t.subject}
-                    </h3>
-                  </div>
-
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '4px 10px', borderRadius: '6px', textAlign: 'right' }}>
-                      <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>SLA TARGET</p>
-                      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#34D399' }}>
-                        {new Date(t.slaDeadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: '60%', background: '#10B981', height: '100%', borderRadius: '4px' }}></div>
                     </div>
                   </div>
-                </div>
 
-                <p style={{ color: '#D1D5DB', fontSize: '0.85rem', lineHeight: '1.4' }}>{t.description}</p>
-
-                {/* AI Row Meta & Quick Actions */}
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.78rem' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconUser /> {t.customerName}</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBot /> <span style={{ color: '#818CF8' }}>{t.assignedAgentName}</span></span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBrain /> Confidence: {(t.confidenceScore * 100).toFixed(0)}%</span>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                      <span style={{ color: '#38BDF8', fontWeight: 600 }}>Neutral</span>
+                      <span style={{ color: 'var(--text-muted)' }}>20%</span>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: '20%', background: '#38BDF8', height: '100%', borderRadius: '4px' }}></div>
+                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      <IconMessage /> View & AI Reply
-                    </button>
-                    {t.status !== 'Resolved' && t.status !== 'Closed' && (
-                      <button onClick={() => handleStatusChange(t.id, 'Resolved')} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
-                        Mark Resolved
-                      </button>
-                    )}
-                    {t.status === 'Resolved' && !t.csatScore && (
-                      <button onClick={() => setCsatModalTicket(t)} style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
-                        Rate CSAT
-                      </button>
-                    )}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                      <span style={{ color: '#F59E0B', fontWeight: 600 }}>Negative</span>
+                      <span style={{ color: 'var(--text-muted)' }}>15%</span>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: '15%', background: '#F59E0B', height: '100%', borderRadius: '4px' }}></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                      <span style={{ color: '#F43F5E', fontWeight: 600 }}>Frustrated</span>
+                      <span style={{ color: 'var(--text-muted)' }}>5%</span>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: '5%', background: '#F43F5E', height: '100%', borderRadius: '4px' }}></div>
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
+
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <IconUsers /> Queue Workload
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                      <span>Tier 1 Support</span>
+                      <span style={{ fontWeight: 600, color: '#EC4899' }}>85%</span>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: '85%', background: '#EC4899', height: '100%', borderRadius: '4px' }}></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                      <span>Tier 2 Specialists</span>
+                      <span style={{ fontWeight: 600, color: '#8B5CF6' }}>45%</span>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: '45%', background: '#8B5CF6', height: '100%', borderRadius: '4px' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Ticket Workspace Table */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="glass-panel" style={{ padding: '14px 18px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', flex: 1 }}>
+                  <div style={{ position: 'relative', width: '260px' }}>
+                    <input
+                      type="text"
+                      placeholder="Search tickets, customers..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 12px 6px 32px', borderRadius: '8px', width: '100%', fontSize: '0.85rem' }}
+                    />
+                    <div style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}>
+                      <IconSearch />
+                    </div>
+                  </div>
+
+                  <select
+                    value={categoryFilter}
+                    onChange={e => setCategoryFilter(e.target.value)}
+                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '0.8rem' }}
+                  >
+                    <option value="All">All Categories</option>
+                    <option value="Technical & Bugs">Technical & Bugs</option>
+                    <option value="Billing & Payments">Billing & Payments</option>
+                    <option value="Account & Security">Account & Security</option>
+                    <option value="Feature Requests">Feature Requests</option>
+                  </select>
+
+                  <select
+                    value={priorityFilter}
+                    onChange={e => setPriorityFilter(e.target.value)}
+                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '6px 10px', borderRadius: '8px', fontSize: '0.8rem' }}
+                  >
+                    <option value="All">All Priorities</option>
+                    <option value="Urgent">Urgent</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {filteredTickets.map(t => (
+                  <div key={t.id} className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '10px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                          <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600, fontSize: '0.85rem' }}>{t.id}</span>
+                          <span className={`badge badge-${t.priority.toLowerCase()}`}>{t.priority}</span>
+                          <span className={`badge badge-${t.status.toLowerCase().replace(' ', '')}`}>{t.status}</span>
+                          <span style={{ background: 'rgba(255,255,255,0.06)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                            {t.category}
+                          </span>
+                        </div>
+                        <h3 onClick={() => openTicketDetail(t)} style={{ fontSize: '1rem', fontWeight: 700, color: '#F9FAFB', cursor: 'pointer', textDecoration: 'underline decoration-dotted' }}>
+                          {t.subject}
+                        </h3>
+                      </div>
+
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '4px 10px', borderRadius: '6px', textAlign: 'right' }}>
+                          <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>SLA TARGET</p>
+                          <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#34D399' }}>
+                            {new Date(t.slaDeadline).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p style={{ color: '#D1D5DB', fontSize: '0.85rem', lineHeight: '1.4' }}>{t.description}</p>
+
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 14px', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.78rem' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconUser /> {t.customerName}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBot /> <span style={{ color: '#818CF8' }}>{t.assignedAgentName}</span></span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><IconBrain /> Confidence: {(t.confidenceScore * 100).toFixed(0)}%</span>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button onClick={() => openTicketDetail(t)} style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#A5B4FC', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <IconMessage /> View & AI Reply
+                        </button>
+                        {t.status !== 'Resolved' && t.status !== 'Closed' && (
+                          <button onClick={() => handleStatusChange(t.id, 'Resolved')} style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                            Mark Resolved
+                          </button>
+                        )}
+                        {t.status === 'Resolved' && !t.csatScore && (
+                          <button onClick={() => setCsatModalTicket(t)} style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#FBBF24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer', fontWeight: 600 }}>
+                            Rate CSAT
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-
         </div>
+      )}
 
+      {/* VIEW 2: DYNAMIC ANALYTICS TAB SCREEN */}
+      {activeTab === 'Analytics' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <IconChart /> Analytics & CSAT Performance Hub
+              </h2>
+              <button onClick={() => setActiveTab('Dashboard')} style={{ background: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '6px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                <IconClose /> Close View
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>NET PROMOTER SCORE (NPS)</p>
+                <h1 style={{ fontSize: '2.8rem', fontWeight: 800, color: '#10B981', margin: '4px 0' }}>+78</h1>
+                <span style={{ color: '#34D399', fontSize: '0.75rem' }}>Top 5% SaaS Benchmark</span>
+              </div>
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>FIRST CONTACT RESOLUTION (FCR)</p>
+                <h1 style={{ fontSize: '2.8rem', fontWeight: 800, color: '#38BDF8', margin: '4px 0' }}>88.4%</h1>
+                <span style={{ color: '#38BDF8', fontSize: '0.75rem' }}>Automated AI Matching</span>
+              </div>
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 600 }}>AVG RESPONSE SPEED</p>
+                <h1 style={{ fontSize: '2.8rem', fontWeight: 800, color: '#FBBF24', margin: '4px 0' }}>4.2 mins</h1>
+                <span style={{ color: '#FBBF24', fontSize: '0.75rem' }}>3x Faster than Average</span>
+              </div>
+            </div>
+
+            {/* Category Volume Breakdown */}
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>Category Volume Breakdown</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '10px', borderLeft: '4px solid #38BDF8' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Technical & Bugs</p>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF' }}>42% (62 Tickets)</h3>
+              </div>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '10px', borderLeft: '4px solid #EC4899' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Billing & Payments</p>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF' }}>28% (41 Tickets)</h3>
+              </div>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '10px', borderLeft: '4px solid #F59E0B' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Account & Security</p>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF' }}>18% (27 Tickets)</h3>
+              </div>
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '10px', borderLeft: '4px solid #10B981' }}>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Feature Requests</p>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFF' }}>12% (18 Tickets)</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 3: DYNAMIC TEAM TAB SCREEN */}
+      {activeTab === 'Team' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <IconUsers /> Agent Workload & Performance Leaderboard
+              </h2>
+              <button onClick={() => setActiveTab('Dashboard')} style={{ background: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '6px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                <IconClose /> Close View
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+              {agents.map(a => (
+                <div key={a.id} className="glass-panel" style={{ padding: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#FFF' }}>
+                        {a.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#FFF' }}>{a.name}</h3>
+                        <p style={{ fontSize: '0.75rem', color: '#A5B4FC' }}>{a.role}</p>
+                      </div>
+                    </div>
+                    <span className={`badge ${a.status === 'Available' ? 'badge-resolved' : 'badge-urgent'}`}>{a.status}</span>
+                  </div>
+
+                  <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Active Capacity:</span>
+                      <strong>{a.activeTickets} / {a.maxCapacity} tickets</strong>
+                    </div>
+                    <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px', height: '6px' }}>
+                      <div style={{ width: `${(a.activeTickets / a.maxCapacity) * 100}%`, background: '#6366F1', height: '100%', borderRadius: '4px' }}></div>
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    Specialties: <strong style={{ color: '#E5E7EB' }}>{a.specialties ? a.specialties.join(', ') : 'General Support'}</strong>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 4: DYNAMIC SETTINGS TAB SCREEN */}
+      {activeTab === 'Settings' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="glass-panel" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+              <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FFF', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <IconBot /> SLA Policy Rules & AI Classifier Controls
+              </h2>
+              <button onClick={() => setActiveTab('Dashboard')} style={{ background: 'rgba(244, 63, 94, 0.15)', color: '#F43F5E', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '6px 14px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem' }}>
+                <IconClose /> Close View
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>SLA Target Thresholds</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
+                  <div style={{ background: 'rgba(244, 63, 94, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#F43F5E', fontWeight: 600 }}>Urgent Priority Target</span>
+                    <strong>1 Hour</strong>
+                  </div>
+                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#F59E0B', fontWeight: 600 }}>High Priority Target</span>
+                    <strong>4 Hours</strong>
+                  </div>
+                  <div style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#818CF8', fontWeight: 600 }}>Medium Priority Target</span>
+                    <strong>12 Hours</strong>
+                  </div>
+                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#34D399', fontWeight: 600 }}>Low Priority Target</span>
+                    <strong>24 Hours</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="glass-panel" style={{ padding: '20px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>AI Routing Sensitivity</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                  Minimum confidence threshold for automatic agent assignment: <strong>85%</strong>
+                </p>
+                <input type="range" min="50" max="95" defaultValue="85" style={{ width: '100%', marginBottom: '16px' }} />
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', fontSize: '0.8rem', color: '#34D399' }}>
+                  ✓ AI Auto-routing Active (TF-IDF Vectorizer Enabled)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FLOATING AI SUPPORT COPILOT BOT TRIGGER & CHAT DRAWER */}
+      <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999 }}>
+        <button
+          onClick={() => setShowBotDrawer(!showBotDrawer)}
+          style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            background: 'var(--accent-gradient)',
+            border: 'none',
+            color: '#FFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.6)',
+            cursor: 'pointer'
+          }}
+          title="Open AI Support Copilot Bot"
+        >
+          <IconBot size={24} />
+        </button>
       </div>
 
-      {/* TICKET DETAIL & COMMENTS DRAWER MODAL WITH PROMINENT CLOSE BUTTON */}
+      {/* AI BOT CHAT DRAWER */}
+      {showBotDrawer && (
+        <div style={{ position: 'fixed', bottom: '90px', right: '24px', width: '360px', height: '480px', zIndex: 1000 }} className="glass-panel">
+          <div style={{ padding: '14px 18px', background: 'rgba(0,0,0,0.4)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <IconBot />
+              <strong style={{ fontSize: '0.9rem', color: '#FFF' }}>SupportPulse AI Bot</strong>
+            </div>
+            <button onClick={() => setShowBotDrawer(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+              <IconClose />
+            </button>
+          </div>
+
+          <div style={{ padding: '14px', height: '360px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {botMessages.map((m, idx) => (
+              <div key={idx} style={{ alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start', background: m.sender === 'user' ? 'var(--accent-indigo)' : 'rgba(255,255,255,0.06)', color: '#FFF', padding: '10px 14px', borderRadius: '12px', maxWidth: '82%', fontSize: '0.82rem', lineHeight: '1.4' }}>
+                {m.text}
+              </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+
+          <form onSubmit={handleBotSubmit} style={{ padding: '10px 14px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '8px' }}>
+            <input
+              type="text"
+              value={botInputText}
+              onChange={e => setBotInputText(e.target.value)}
+              placeholder="Ask AI bot..."
+              style={{ flex: 1, background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border-color)', color: '#FFF', padding: '8px 12px', borderRadius: '8px', fontSize: '0.8rem' }}
+            />
+            <button type="submit" className="glow-btn" style={{ padding: '8px 12px' }}>
+              <IconSend />
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* TICKET DETAIL DRAWER */}
       {selectedTicket && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div className="glass-panel" style={{ width: '100%', maxWidth: '720px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -780,14 +944,13 @@ export default function Home() {
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#A5B4FC', fontWeight: 600 }}>{selectedTicket.id}</span>
                 <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFF', marginTop: '2px' }}>{selectedTicket.subject}</h2>
               </div>
-              <button onClick={() => setSelectedTicket(null)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.8rem' }} title="Close Modal">
+              <button onClick={() => setSelectedTicket(null)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.8rem' }}>
                 <IconClose /> Close
               </button>
             </div>
 
             <p style={{ color: '#D1D5DB', fontSize: '0.85rem', lineHeight: 1.5, marginBottom: '16px' }}>{selectedTicket.description}</p>
 
-            {/* AI Suggested Response Section */}
             <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontWeight: 700, color: '#A5B4FC', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -810,7 +973,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Comments Thread */}
             <h3 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#FFF', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <IconMessage /> Activity Timeline & Notes
             </h3>
@@ -834,7 +996,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* CREATE TICKET MODAL WITH LIVE AI CLASSIFICATION & PROMINENT CLOSE BUTTON */}
+      {/* CREATE TICKET MODAL */}
       {showCreateModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div className="glass-panel" style={{ width: '100%', maxWidth: '620px', padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -842,7 +1004,7 @@ export default function Home() {
               <h2 style={{ fontSize: '1.2rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 New Support Ticket + AI Live Inference
               </h2>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.8rem' }} title="Close Modal">
+              <button onClick={() => setShowCreateModal(false)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '6px 12px', borderRadius: '8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.8rem' }}>
                 <IconClose /> Close
               </button>
             </div>
@@ -897,13 +1059,13 @@ export default function Home() {
         </div>
       )}
 
-      {/* CSAT RATING MODAL WITH PROMINENT CLOSE BUTTON */}
+      {/* CSAT RATING MODAL */}
       {csatModalTicket && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
           <div className="glass-panel" style={{ width: '100%', maxWidth: '480px', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#FFF' }}>Rate Customer Experience</h3>
-              <button onClick={() => setCsatModalTicket(null)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.75rem' }} title="Close Modal">
+              <button onClick={() => setCsatModalTicket(null)} style={{ background: 'rgba(244, 63, 94, 0.15)', border: '1px solid rgba(244, 63, 94, 0.3)', color: '#F43F5E', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: 700, fontSize: '0.75rem' }}>
                 <IconClose /> Close
               </button>
             </div>
