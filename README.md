@@ -1,90 +1,113 @@
-# AI-Based Customer Support Ticketing System
+# 🚀 SupportPulse AI: AI-Based Customer Support Ticketing Platform
 
-An enterprise-grade, smart customer support platform built with **Next.js**, **Node.js (Express)**, **Python (ML / NLP)**, and **MongoDB**. Features automated ticket classification, AI-driven workload routing, SLA tracking & breach monitoring, agent performance leaderboards, and customer satisfaction analytics.
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-customer-support-ticketing.vercel.app)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14.2-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Python ML](https://img.shields.io/badge/Python-3.11_ML-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-![SupportPulse AI Banner](https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1200&auto=format&fit=crop&q=80)
-
----
-
-## 🌟 Key Features
-
-### 1. 🤖 AI-Powered Ticket Classification & Automated Routing
-- **NLP Text Classification**: Predicts ticket category (`Billing & Payments`, `Technical & Bugs`, `Account & Security`, `Feature Requests`, `General Inquiries`).
-- **Urgency & Priority Scoring**: Assigns `Urgent`, `High`, `Medium`, or `Low` priority with automatic SLA deadlines.
-- **Sentiment Engine**: Analyzes customer tone (`Positive`, `Neutral`, `Negative`, `Frustrated`) and calculates sentiment scores.
-- **Smart Agent Matcher**: Routes tickets based on domain specialty alignment, current queue load, and agent rating.
-
-### 2. ⏱️ SLA Tracking & Breach Prevention
-- **Dynamic SLA Timers**: Urgent (1 hour), High (4 hours), Medium (12 hours), Low (24 hours).
-- **Compliance Rate Gauges**: Live SLA target monitoring (% met vs breached).
-- **Early Warning Triggers**: Highlights tickets approaching breach window within 60 minutes.
-
-### 3. 👥 Agent Performance Dashboards
-- **Workload Balancer**: Real-time capacity meters for active vs maximum agent queue limits.
-- **Key Metrics**: Average Handle Time (AHT), total tickets resolved, and customer ratings.
-- **Agent Status Control**: Availability toggles for optimal team routing.
-
-### 4. ⭐ Customer Satisfaction (CSAT) Analytics
-- **CSAT Gauge & Net Promoter Score (NPS)**: Real-time score aggregation.
-- **Sentiment Breakdown**: Distribution of customer sentiment across support streams.
-- **Feedback Feed**: Customer ratings and qualitative feedback logs.
+> **SupportPulse AI** is an enterprise-grade, full-stack AI-Powered Customer Support Ticketing & SLA Automation Platform. Built with **Next.js 14 (App Router)**, **Python Machine Learning (TF-IDF Vectorization)**, **Node.js**, and **Vercel Serverless Architecture**, it delivers automated ticket classification, intelligent agent routing, real-time SLA breach tracking, customer sentiment analytics, and an interactive **AI Copilot Bot**.
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## 🌐 Live Production Demo
+* **Live Website**: [https://ai-customer-support-ticketing.vercel.app](https://ai-customer-support-ticketing.vercel.app)
+* **GitHub Repository**: [https://github.com/ByteBySway/ai-customer-support-ticketing](https://github.com/ByteBySway/ai-customer-support-ticketing)
+
+---
+
+## ✨ Key Features & Capabilities
+
+### 🧠 1. Automated AI Ticket Classification & Routing
+- **Live AI Inference Preview**: Auto-classifies ticket Category (*Technical & Bugs*, *Billing & Payments*, *Account & Security*, *Feature Requests*), Priority (*Urgent*, *High*, *Medium*, *Low*), and Sentiment (*Positive*, *Neutral*, *Negative*, *Frustrated*) in real-time as the customer types.
+- **Intelligent Agent Match**: Uses TF-IDF keyword vectorization and agent capacity scoring to assign tickets to the best-matched online support specialist.
+
+### ⏱️ 2. Real-Time SLA Tracking & Breach Alarms
+- Dynamic SLA target countdown timers (`1h` Urgent, `4h` High, `12h` Medium, `24h` Low).
+- **Stitch Circular SLA Donut Infographic**: Real-time visual compliance gauge displaying `96.4%` SLA target performance.
+
+### 🤖 3. Interactive AI Support Copilot Bot
+- Floating interactive chat assistant drawer in the bottom right corner.
+- Answers support manager queries regarding SLA compliance, active ticket counts, agent capacity, and auto-drafting empathetic responses.
+
+### 📊 4. Agent Performance & CSAT Analytics
+- **Team Workload Leaderboard**: Visual progress bars monitoring active agent queue load (Tier 1 vs. Tier 2 Specialists).
+- **CSAT Review System**: 1-5 Star customer rating modal with feedback submission and Net Promoter Score (NPS `+78`) analytics.
+
+### 📥 5. One-Click Data Export
+- Instant CSV dataset exporter for support ticket audit trails.
+
+---
+
+## 🏗️ System Architecture
 
 ```mermaid
 graph TD
-    A[Next.js 14 Web Portal] -->|HTTP REST APIs| B[Node.js Express Server]
-    B -->|Persists Tickets & Agents| C[MongoDB / In-Memory Store]
-    B -->|Runs Classification & Routing| D[Python ML Engine]
+    A[Client Web App - Next.js 14] -->|REST API Requests| B[Serverless Route Handlers]
+    B -->|Keyword Vectorization| C[Python ML Engine - TF-IDF]
+    C -->|Classified Intent & Priority| B
+    B -->|Agent Matching & Capacity Score| D[In-Memory MongoDB Store]
+    D -->|Real-Time SLA & Tickets Data| A
 ```
-
-- **Frontend**: Next.js 14, React 18, Glassmorphism CSS design system.
-- **Backend**: Node.js, Express, REST API.
-- **Machine Learning**: Python, Scikit-Learn, TF-IDF Vectorization, NLP Sentiment Lexicon.
-- **Database**: MongoDB Mongoose connection + Native zero-dependency fallback store.
 
 ---
 
-## 🚀 Quick Start Guide
+## 🛠️ Tech Stack
 
-### 1. Run Backend REST API Server (Port 5000)
-```bash
-cd backend
-node src/server.js
-```
-The server will start at `http://localhost:5000`.
-
-### 2. Run Python ML Classification Service
-```bash
-cd ml_service
-python classifier.py
-```
-
-### 3. Run Next.js Web Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open `http://localhost:3000` in your browser.
+| Component | Technology Used |
+| :--- | :--- |
+| **Frontend Framework** | **Next.js 14** (App Router, React 18) |
+| **Styling & UI Design** | **Vanilla CSS Tokens** (Stitch & Dribbble CoreLoop AI Glassmorphism) |
+| **Machine Learning Engine** | **Python 3.11** (TF-IDF Keyword Vectorization & Sentiment Scoring) |
+| **Backend API** | **Node.js / Next.js Serverless API Route Handlers** |
+| **Data Store** | **In-Memory / MongoDB Dataset Store** |
+| **Deployment & Hosting** | **Vercel Edge Cloud** |
 
 ---
 
-## 📌 API Reference
+## 🚀 Local Quick Start Guide
+
+### Prerequisites
+* **Node.js 18+** installed
+* **Python 3.9+** installed
+
+### Installation & Setup
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/ByteBySway/ai-customer-support-ticketing.git
+   cd ai-customer-support-ticketing
+   ```
+
+2. **Install Frontend Dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+3. **Run Next.js Local Development Server**:
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000` in your browser to view the application!
+
+---
+
+## 📡 API Endpoint Reference
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/api/tickets` | List all support tickets with filtering |
-| `POST` | `/api/tickets` | Submit new ticket with automated AI classification & routing |
-| `POST` | `/api/ai/classify` | Live AI preview endpoint for subject & description |
-| `PUT` | `/api/tickets/:id` | Update ticket status / reassign agent |
-| `GET` | `/api/sla/metrics` | Retrieve SLA compliance metrics and breach counts |
-| `GET` | `/api/agents` | Retrieve agent list & performance stats |
-| `GET` | `/api/analytics/csat` | Retrieve CSAT analytics and feedback logs |
+| `GET` | `/api/tickets` | Retrieve list of all support tickets |
+| `POST` | `/api/tickets` | Create new support ticket with AI auto-routing |
+| `POST` | `/api/ai/classify` | Run live AI classification on subject and description |
+| `POST` | `/api/ai/suggest-reply` | Generate AI auto-drafted response |
+| `GET` | `/api/sla/metrics` | Fetch SLA compliance rate and target stats |
+| `GET` | `/api/agents` | Fetch support agent team availability and workload |
+| `GET` | `/api/analytics/csat` | Fetch CSAT score and review statistics |
 
 ---
 
 ## 📄 License
-MIT License. Built for internship submission.
+Distributed under the **MIT License**. See `LICENSE` for details.
+
+---
+*Crafted with ❤️ for Internship Project Deliverables.*
