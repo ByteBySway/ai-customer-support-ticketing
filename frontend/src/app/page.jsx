@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const API_BASE = '/api';
 
-// Crisp, Resolution-Independent SVG Icons
+// Crisp, Resolution-Independent SVG Icons (Zero string emojis to eliminate question mark rendering bugs)
 const IconZap = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -32,7 +32,7 @@ const IconClock = () => (
 
 const IconUsers = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 1 0 7.75" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
   </svg>
 );
 
@@ -510,7 +510,7 @@ export default function Home() {
               <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '4px 0', color: '#FBBF24' }}>
                 {csatData ? csatData.averageCsat : 4.85} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>/ 5.0</span>
               </h2>
-              <div style={{ display: 'flex', gap: '2px', marginTop: '2px' }}>
+              <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
                 {[1, 2, 3, 4, 5].map(s => <IconStar key={s} filled />)}
               </div>
             </div>
@@ -751,7 +751,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Category Volume Breakdown */}
             <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>Category Volume Breakdown</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
               <div style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: '10px', borderLeft: '4px solid #38BDF8' }}>
@@ -824,7 +823,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* VIEW 4: DYNAMIC SETTINGS TAB SCREEN */}
+      {/* VIEW 4: DYNAMIC SETTINGS TAB SCREEN (CLEAN SVG BADGES) */}
       {activeTab === 'Settings' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="glass-panel" style={{ padding: '24px' }}>
@@ -841,33 +840,33 @@ export default function Home() {
               <div className="glass-panel" style={{ padding: '20px' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>SLA Target Thresholds</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.85rem' }}>
-                  <div style={{ background: 'rgba(244, 63, 94, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#F43F5E', fontWeight: 600 }}>Urgent Priority Target</span>
-                    <strong>1 Hour</strong>
+                  <div style={{ background: 'rgba(244, 63, 94, 0.1)', padding: '12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="badge badge-urgent">Urgent Priority Target</span>
+                    <strong style={{ color: '#FFF' }}>1 Hour SLA</strong>
                   </div>
-                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#F59E0B', fontWeight: 600 }}>High Priority Target</span>
-                    <strong>4 Hours</strong>
+                  <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="badge badge-high">High Priority Target</span>
+                    <strong style={{ color: '#FFF' }}>4 Hours SLA</strong>
                   </div>
-                  <div style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#818CF8', fontWeight: 600 }}>Medium Priority Target</span>
-                    <strong>12 Hours</strong>
+                  <div style={{ background: 'rgba(99, 102, 241, 0.1)', padding: '12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="badge badge-medium">Medium Priority Target</span>
+                    <strong style={{ color: '#FFF' }}>12 Hours SLA</strong>
                   </div>
-                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#34D399', fontWeight: 600 }}>Low Priority Target</span>
-                    <strong>24 Hours</strong>
+                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="badge badge-low">Low Priority Target</span>
+                    <strong style={{ color: '#FFF' }}>24 Hours SLA</strong>
                   </div>
                 </div>
               </div>
 
               <div className="glass-panel" style={{ padding: '20px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>AI Routing Sensitivity</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#A5B4FC', marginBottom: '14px' }}>AI Routing Parameters</h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
                   Minimum confidence threshold for automatic agent assignment: <strong>85%</strong>
                 </p>
                 <input type="range" min="50" max="95" defaultValue="85" style={{ width: '100%', marginBottom: '16px' }} />
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', fontSize: '0.8rem', color: '#34D399' }}>
-                  ✓ AI Auto-routing Active (TF-IDF Vectorizer Enabled)
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '12px', borderRadius: '8px', fontSize: '0.8rem', color: '#34D399', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <IconZap /> AI Auto-routing Active (TF-IDF Vectorizer Enabled)
                 </div>
               </div>
             </div>
